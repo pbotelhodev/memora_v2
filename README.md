@@ -1,16 +1,55 @@
-# React + Vite
+# 📸 Memora V2: A Rede Social Exclusiva do Seu Evento
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+> "Desenvolvido para conectar momentos reais."
 
-Currently, two official plugins are available:
+## 🌟 Sobre o Projeto
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+O **Memora V2** é uma plataforma Fullstack SaaS (Software as a Service) que transforma qualquer evento (casamentos, festas, corporativos) em uma experiência social em tempo real.
 
-## React Compiler
+O projeto é ambicioso, focado em alta disponibilidade e monetização. Os convidados acessam a rede social temporária via **QR Code** e compartilham fotos que são exibidas instantaneamente em um **Feed ao Vivo** no telão.
 
-The React Compiler is currently not compatible with SWC. See [this issue](https://github.com/vitejs/vite-plugin-react/issues/428) for tracking the progress.
+Ele possui um sistema de planos e **upsells** robusto para maximizar a receita, tornando-o um produto de portfólio com valor comercial real.
 
-## Expanding the ESLint configuration
+## ⚙️ Tecnologias Utilizadas
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Este projeto foi construído para ser moderno e escalável, utilizando as seguintes tecnologias:
+
+* **Frontend:** `React` com `Vite` (para performance de desenvolvimento)
+* **Estilização:** `Tailwind CSS` (para construção rápida de interfaces)
+* **Backend & DB:** `Supabase` (Autenticação, Banco de Dados SQL e Realtime)
+* **Storage:** `Cloudflare R2` (Para armazenamento seguro e eficiente das fotos dos eventos)
+* **Rotas:** `React Router DOM`
+
+## 🛠️ Instalação e Execução
+
+Para rodar o Memora V2 localmente, siga os passos abaixo:
+
+1.  **Clone o Repositório:**
+    ```bash
+    git clone [SEU LINK DO REPOSITÓRIO AQUI]
+    cd memora-v2
+    ```
+2.  **Instale as Dependências:**
+    ```bash
+    npm install
+    # ou
+    yarn install
+    ```
+3.  **Configuração de Variáveis de Ambiente:**
+    Crie um arquivo `.env` na raiz do projeto e adicione suas chaves do Supabase e do Cloudflare R2 (bucket e chaves de acesso).
+    ```env
+    VITE_SUPABASE_URL=...
+    VITE_SUPABASE_ANON_KEY=...
+    # ... outras chaves R2 ...
+    ```
+4.  **Execute o Projeto:**
+    ```bash
+    npm run dev
+    # ou
+    yarn dev
+    ```
+    O aplicativo estará disponível em `http://localhost:5173/`.
+
+## 📌 Status do Projeto
+
+Estamos na fase de **Implementação da UI e Conexão Inicial** (Header e Hero Section).
