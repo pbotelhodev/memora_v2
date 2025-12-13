@@ -54,7 +54,7 @@ const Header = () => {
             onClick={() => setMenuSwitch(!menuSwitch)}
             className="md:hidden text-white text-2xl"
           >
-            <Menu className="text-cyan-500 w-7 h-7" />
+            <Menu className="text-cyan-500 w-7 h-7"/>
           </button>
         </div>
         {/* Navegação Responsivo */}
