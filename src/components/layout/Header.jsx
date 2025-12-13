@@ -45,7 +45,7 @@ const Header = () => {
             to="/app/criar"
             className="hidden md:block px-5 py-2 font-semibold text-white 
                    bg-gradient-to-r from-violet-600 to-cyan-500 
-                   rounded-lg transition duration-300 hover:opacity-80"
+                   rounded-lg transition duration-300 hover:opacity-80 hover:scale-[1.02] active:scale-100"
           >
             Criar Evento
           </Link>
@@ -54,13 +54,13 @@ const Header = () => {
             onClick={() => setMenuSwitch(!menuSwitch)}
             className="md:hidden text-white text-2xl"
           >
-            <Menu className="text-cyan-500 w-7 h-7"/>
+            <Menu className="text-cyan-500 w-7 h-7" />
           </button>
         </div>
         {/* Navegação Responsivo */}
       </nav>
       {menuSwitch && (
-        <nav className="fixed top-20 right-0 w-64 bg-slate-900 z-40 shadow-2xl md:hidden">
+        <nav className="fixed top-20 right-0 w-64 bg-slate-900 h-full z-40 shadow-2xl md:hidden border-l border-t border-white/10">
           <div className="flex flex-col space-y-4 p-4 ">
             {navLinks.map((navLink) => (
               <Link
@@ -74,7 +74,7 @@ const Header = () => {
             ))}
             <Link
               to="/app/criar"
-              className="mt-4 px-4 py-2 text-center font-bold text-white bg-gradient-to-r from-violet-600 to-cyan-500 rounded-lg shadow-lg"
+              className="mt-4 px-4 py-2 text-center font-bold text-white bg-gradient-to-r from-violet-600 to-cyan-500 rounded-lg shadow-lg hover:scale-[1.02] active:scale-100"
               onClick={() => setMenuSwitch(false)} // FECHA O MENU NO CLIQUE
             >
               CRIAR EVENTO
