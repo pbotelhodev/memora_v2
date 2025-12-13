@@ -18,7 +18,7 @@ const Hero = () => {
         </h1>
 
         {/*  SUBTÍTULO  */}
-        <p className="text-white text-1xl md:text-2xl max-w-2xl mx-auto mb-16">
+        <p className="text-slate-200 text-1xl md:text-2xl max-w-2xl mx-auto mb-16">
           A interação que faltava na sua festa. Um feed exclusivo e em tempo
           real, feito para conectar seus convidados e eternizar cada momento.
         </p>
