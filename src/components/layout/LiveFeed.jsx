@@ -1,4 +1,4 @@
-import exampleView from "../../assets/exempleView.png";
+import exampleView from "../../assets/telao.png";
 
 const LiveFeed = () => {
   return (
