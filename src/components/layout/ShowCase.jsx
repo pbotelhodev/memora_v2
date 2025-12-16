@@ -7,17 +7,17 @@ import perfil from "../../assets/mockup-perfil.png";
 
 const ShowCase = () => {
   const baseMockupWrapper =
-    "shadow-2xl transition duration-500 hover:scale-[1.01]";
+    "shadow-2xl transition duration-500 hover:scale-[1.08]";
   const highlightMockupWrapper =
-    "shadow-2xl md:scale-[0.9] md:z-10 relative transition duration-500";
+    "shadow-2xl md:scale-[0.9] md:z-10 relative transition duration-500 hover:scale-[0.95]";
 
   return (
-    <section className="bg-slate-950 py-24">
-      <div className="max-w-7xl mx-auto px-4 text-center">
-        <h2 className="text-white text-4xl md:text-5xl font-extrabold mb-4">
+    <section className="bg-slate-950 py-20 ">
+      <div className="max-w-7xl mx-auto px-4 text-center ">
+        <h2 className="text-white text-4xl md:text-5xl font-extrabold mb-4 ">
           Experiência Mobile
         </h2>
-        <h3 className="text-gray-400 text-xl md:text-2xl max-w-3xl mx-auto mb-10">
+        <h3 className=" text-gray-400 text-xl md:text-2xl max-w-3xl mx-auto mb-1 md:mb-10">
           Seus convidados acessam pelo celular e compartilham momentos em tempo
           real.
         </h3>
@@ -51,9 +51,12 @@ const ShowCase = () => {
           </div>
         </div>
 
-        <p className="text-white text-3xl font-semibold mt-20 md:mt-32 max-w-4xl mx-auto">
-          ✨ A experiência social que seus convidados já dominam
-        </p>
+        <div className="bg-linear-to-r from-violet-600 to-cyan-500 rounded-full mt-5 md:mt-10 max-w-fit mx-auto p-3 md:p-4 shadow-xl">
+          <p className="text-white text-xl md:text-1xl font-semibold px-4">
+            {/* A classe do texto agora é só text-white */}✨ A experiência
+            social que seus convidados já dominam
+          </p>
+        </div>
       </div>
     </section>
   );

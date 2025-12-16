@@ -6,8 +6,8 @@ import { ArrowRight } from "lucide-react";
 const Hero = () => {
   return (
     // 1. CONTAINER GERAL: Fundo e Centralização
-    <section className="bg-slate-900 min-h-screen flex items-center justify-center">
-      <div className="pt-20 max-w-6xl mx-auto px-4 py-12 text-center">
+    <section className="bg-slate-900 min-h-screen md:min-h-[80vh] xl:min-h-[90vh] flex items-center justify-center">
+      <div className="pt-20 md:pt-30  max-w-6xl mx-auto px-4 py-12 text-center">
         {/* TÍTULO PRINCIPAL*/}
         <h1 className="text-4xl md:text-6xl max-w-3xl mx-auto font-semibold mb-6 leading-tight">
           {/* O span recebe as classes de gradiente e clipagem */}A Rede Social{" "}
