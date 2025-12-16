@@ -11,7 +11,7 @@ const Hero = () => {
         {/* TÍTULO PRINCIPAL*/}
         <h1 className="text-4xl md:text-6xl max-w-3xl mx-auto font-semibold mb-6 leading-tight">
           {/* O span recebe as classes de gradiente e clipagem */}A Rede Social{" "}
-          <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-cyan-500">
+          <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-cyan-400">
             Exclusiva Do Seu Evento
           </span>
         </h1>

@@ -4,6 +4,7 @@
 import Header from "../../components/layout/Header";
 import Hero from "../../components/layout/Hero";
 import ShowCase from "../../components/layout/ShowCase";
+import LiveFeed from "../../components/layout/LiveFeed";
 
 const Home = () => {
   //States
@@ -22,7 +23,7 @@ const Home = () => {
       {/* ========== Show Case ========== */}
       <ShowCase />
       {/* ========== Live Feed========== */}
-
+      <LiveFeed />
       {/* ========== StepsBySteps ========== */}
 
       {/* =========== Pricing Section ========== */}
