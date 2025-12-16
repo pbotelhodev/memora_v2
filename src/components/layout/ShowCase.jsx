@@ -15,7 +15,7 @@ const ShowCase = () => {
     <section className="bg-slate-950 py-20 ">
       <div className="max-w-7xl mx-auto px-4 text-center ">
         <h2 className="text-white text-3xl md:text-4xl font-extrabold mb-4 ">
-          Experiência Mobile
+          <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-cyan-500">Experiência Mobile</span>
         </h2>
         <h3 className=" text-gray-400 text-xl md:text-xl max-w-2xl mx-auto mb-1 md:mb-10">
           Seus convidados acessam pelo celular e compartilham momentos em tempo
