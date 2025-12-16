@@ -1,4 +1,5 @@
-import exampleView from "../../assets/telao.png";
+//Import do telão
+import telaoImg from "../../assets/telao.png";
 
 const LiveFeed = () => {
   return (
@@ -17,7 +18,7 @@ const LiveFeed = () => {
 
         <div className="w-full bg-slate-800 rounded-3xl shadow-[0_0_10px_3px_rgba(6,182,212,0.2)] flex items-center justify-center">
           <img
-            src={exampleView}
+            src={telaoImg}
             alt="Simulação do Telão"
             className="rounded-3xl"
           />
