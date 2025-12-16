@@ -11,8 +11,20 @@ import logoMemora from "../../assets/logoMemora.png";
 const Header = () => {
   const [menuSwitch, setMenuSwitch] = useState(false);
 
+  const handleScroll = (e, href) => {
+    if (href.startsWith("#")) {
+      e.preventDefault();
+      const targetId = href.replace("#", "");
+      const element = document.getElementById(targetId);
+
+      if (element) {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
+    }
+  };
+
   const navLinks = [
-    { name: "Como funciona", href: "#como-funciona" },
+    { name: "Como funciona", href: "#funcionalidades" },
     { name: "Planos", href: "#planos" },
     { name: "Painel", href: "/login" },
   ];
@@ -29,13 +41,14 @@ const Header = () => {
         {/* Navegação */}
         <div className="hidden md:flex space-x-15">
           {navLinks.map((navLink) => (
-            <Link
-              to={navLink.href}
+            <a
               key={navLink.name}
-              className="text-gray-300 hover:text-cyan-500 transition duration-300"
+              href={navLink.href}
+              onClick={(e) => handleScroll(e, navLink.href)}
+              className="text-gray-300 hover:text-cyan-500 transition duration-300 cursor-pointer"
             >
               {navLink.name}
-            </Link>
+            </a>
           ))}
         </div>
         {/* Botão */}
@@ -63,14 +76,14 @@ const Header = () => {
         <nav className="fixed top-16 right-0 w-64 bg-slate-900 h-full z-40 shadow-2xl md:hidden border-l border-t border-white/10">
           <div className="flex flex-col space-y-4 p-4 ">
             {navLinks.map((navLink) => (
-              <Link
-                to={navLink.href}
+              <a
                 key={navLink.name}
-                className="text-white text-lg hover:text-cyan-500 transition duration-300"
-                onClick={() => setMenuSwitch(false)}
+                href={navLink.href}
+                onClick={(e) => handleScroll(e, navLink.href)}
+                className="text-gray-300 hover:text-cyan-500 transition duration-300 cursor-pointer"
               >
                 {navLink.name}
-              </Link>
+              </a>
             ))}
             <Link
               to="/app/criar"

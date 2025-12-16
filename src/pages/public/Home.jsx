@@ -4,7 +4,10 @@
 import Header from "../../components/layout/Header";
 import Hero from "../../components/layout/Hero";
 import ShowCase from "../../components/layout/ShowCase";
-import LiveFeed from "../../components/layout/LiveFeed";
+import StepsBySteps from "../../components/layout/StepsBySteps";
+import PricingSection from "../../components/layout/PricingSection";
+import UpsellAddons from "../../components/layout/UpSellAddons";
+import Footer from "../../components/layout/Footer";
 
 const Home = () => {
   //States
@@ -22,15 +25,14 @@ const Home = () => {
       <Hero />
       {/* ========== Show Case ========== */}
       <ShowCase />
-      {/* ========== Live Feed========== */}
-      <LiveFeed />
       {/* ========== StepsBySteps ========== */}
-
+      <StepsBySteps />
       {/* =========== Pricing Section ========== */}
-
+      <PricingSection />
       {/* ========== Upsell Addons ========== */}
-
+      <UpsellAddons />
       {/* ========== Footer ========== */}
+      <Footer />
     </>
   );
 };

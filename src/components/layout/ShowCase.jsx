@@ -57,7 +57,7 @@ const ShowCase = () => {
           </div>
         </div>
 
-        <div className="mt- md:mt-10 max-w-fit mx-auto rounded-full p-[px] md:p-0.5 bg-purple-800 shadow-[0_0_10px_3px_rgba(6,182,212,0.2)]">
+        <div className="mt-0 md:mt-10 max-w-fit mx-auto rounded-full p-[px] md:p-0.5 bg-purple-800 shadow-[0_0_10px_3px_rgba(6,182,212,0.2)]">
           <div className="bg-[#130E2E] rounded-full p-3 md:p-4 transition duration-300">
             <p className="text-white md:text-lg font-semibold px-4">
               ✨ A experiência social que seus convidados já dominam
