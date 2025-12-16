@@ -25,7 +25,7 @@ const Hero = () => {
         <Link
           to="/app/criar"
           className="inline-flex items-center space-x-2 px-10 py-4 text-md font-bold text-white 
-         bg-gradient-to-r from-violet-600 to-cyan-500 rounded-xl 
+         bg-gradient-to-r from-violet-600 to-cyan-500 shadow-[0_0_10px_0_rgba(59,130,246,0.2)] rounded-xl 
          transition duration-300 hover:opacity-90 transform hover:scale-[1.02]"
         >
           Criar minha festa agora
