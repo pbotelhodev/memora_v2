@@ -11,7 +11,7 @@ const Hero = () => {
         {/* TÍTULO PRINCIPAL*/}
         <h1 className="text-4xl md:text-6xl max-w-3xl mx-auto font-semibold mb-6 leading-tight">
           {/* O span recebe as classes de gradiente e clipagem */}A Rede Social{" "}
-          <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-cyan-400">
+          <span className="font-bold bg-clip-text text-transparent bg-linear-to-r from-violet-400 to-cyan-400">
             Exclusiva Do Seu Evento
           </span>
         </h1>
@@ -25,7 +25,7 @@ const Hero = () => {
         <Link
           to="/app/criar"
           className="inline-flex items-center space-x-2 px-10 py-4 text-md font-bold text-white 
-         bg-gradient-to-r from-violet-600 to-cyan-500 shadow-[0_0_10px_0_rgba(59,130,246,0.2)] rounded-xl 
+         bg-linear-to-r from-violet-600 to-cyan-500 shadow-[0_0_10px_0_rgba(59,130,246,0.2)] rounded-xl 
          transition duration-300 hover:opacity-90 transform hover:scale-[1.02]"
         >
           Criar minha festa agora

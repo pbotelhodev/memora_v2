@@ -7,7 +7,7 @@ const LiveFeed = () => {
     <section className="bg-slate-900 py-15">
       <div className="max-w-6xl mx-auto px-4 text-center">
         <h2 className="text-3xl md:text-4xl font-extrabold mb-4">
-          <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-cyan-500">
+          <span className="font-bold bg-clip-text text-transparent bg-linear-to-r from-violet-600 to-cyan-500">
             Telão Ao Vivo
           </span>
         </h2>
