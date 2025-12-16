@@ -1,5 +1,5 @@
 //Import do telão
-import telaoImg from "../../assets/telao.png";
+import telaoImg from "../../assets/mockup-feed.png";
 
 const LiveFeed = () => {
   return (
