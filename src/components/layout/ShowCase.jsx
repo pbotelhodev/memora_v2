@@ -17,7 +17,7 @@ const ShowCase = () => {
         <h2 className="text-white text-3xl md:text-4xl font-extrabold mb-4 ">
           <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-cyan-500">Experiência Mobile</span>
         </h2>
-        <h3 className=" text-gray-400 text-xl md:text-xl max-w-2xl mx-auto mb-1 md:mb-10">
+        <h3 className=" text-gray-200 text-xl md:text-xl max-w-2xl mx-auto mb-1 md:mb-10">
           Seus convidados acessam pelo celular e compartilham momentos em tempo
           real.
         </h3>
