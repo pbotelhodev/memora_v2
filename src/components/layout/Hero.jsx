@@ -9,16 +9,15 @@ const Hero = () => {
     <section className="bg-slate-900 min-h-screen flex items-center justify-center">
       <div className="pt-20 max-w-6xl mx-auto px-4 py-12 text-center">
         {/* TÍTULO PRINCIPAL*/}
-        <h1 className="text-4xl md:text-6xl max-w-3xl mx-auto font-bold mb-6 leading-tight">
-          {/* O span recebe as classes de gradiente e clipagem */}
-
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-cyan-500">
-            A Rede Social Exclusiva Do Seu Evento
+        <h1 className="text-4xl md:text-6xl max-w-3xl mx-auto font-semibold mb-6 leading-tight">
+          {/* O span recebe as classes de gradiente e clipagem */}A Rede Social{" "}
+          <span className="font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-600 to-cyan-500">
+            Exclusiva Do Seu Evento
           </span>
         </h1>
 
         {/*  SUBTÍTULO  */}
-        <p className="text-slate-200 text-1xl md:text-2xl max-w-2xl mx-auto mb-16">
+        <p className="font-light text-slate-200 text-1xl md:text-2xl max-w-2xl md:max-w-3xl mx-auto mb-16">
           A interação que faltava na sua festa. Um feed exclusivo e em tempo
           real, feito para conectar seus convidados e eternizar cada momento.
         </p>

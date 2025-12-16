@@ -18,8 +18,8 @@ const Header = () => {
   ];
 
   return (
-    <header className="fixed left-0 right-0 bg-slate-900/90 border-b border-white/10">
-      <nav className=" backdrop-blur-sm flex justify-between items-center h-20 max-w-6xl mx-auto p-4">
+    <header className="fixed left-0 right-0 bg-slate-900/90 border-b border-white/10 z-9999">
+      <nav className=" backdrop-blur flex justify-between items-center h-20 max-w-6xl mx-auto p-4">
         {/* Logo */}
         <div className="text-2xl font-bold text-white cursor-pointer ">
           <Link to="/" className="">
