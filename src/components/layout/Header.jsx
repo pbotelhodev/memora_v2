@@ -19,7 +19,7 @@ const Header = () => {
 
   return (
     <header className="fixed left-0 right-0 bg-slate-900/90 border-b border-white/10 z-9999">
-      <nav className=" backdrop-blur flex justify-between items-center h-20 max-w-6xl mx-auto p-4">
+      <nav className=" backdrop-blur flex justify-between items-center h-16 max-w-6xl mx-auto p-4">
         {/* Logo */}
         <div className="text-2xl font-bold text-white cursor-pointer ">
           <Link to="/" className="">
@@ -60,7 +60,7 @@ const Header = () => {
         {/* Navegação Responsivo */}
       </nav>
       {menuSwitch && (
-        <nav className="fixed top-20 right-0 w-64 bg-slate-900 h-full z-40 shadow-2xl md:hidden border-l border-t border-white/10">
+        <nav className="fixed top-16 right-0 w-64 bg-slate-900 h-full z-40 shadow-2xl md:hidden border-l border-t border-white/10">
           <div className="flex flex-col space-y-4 p-4 ">
             {navLinks.map((navLink) => (
               <Link
