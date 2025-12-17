@@ -14,13 +14,15 @@ import {
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
+import { Toaster, toast } from "sonner";
+import { supabase } from "../../../supabaseClient";
 
 const AuthPage = () => {
   const [pageAtiva, setPageAtiva] = useState("pinCheck");
   const [loading, setLoading] = useState(false);
-  const [viewPass, setViewPass] = useState(true);
-  const [erroPin, setErroPin] = useState(false);
-  const pinMestre = 1234;
+  const [viewPass, setViewPass] = useState(false);
+
+  const [recoveryEmail, setRecoveryEmail] = useState("");
 
   /* Hooks */
   const {
@@ -35,35 +37,115 @@ const AuthPage = () => {
   useEffect(() => {
     reset();
   }, [pageAtiva, reset]);
+
   /* handles */
   const handleLogin = (data) => {
     setLoading(true);
-    console.log(data);
-    setLoading(false);
-  };
+    
+    
 
-  const handleCadastro = (data) => {
-    setLoading(true);
-    console.log(data);
 
     setLoading(false);
   };
 
-  const handleForgotPassword = (data) => {
+  const handleCadastro = async (data) => {
     setLoading(true);
-    console.log(data);
-    setLoading(false);
-  };
 
-  const handleNewPass = (data) => {
-    setLoading(true);
-    console.log(data);
-    if (data.emailPin == pinMestre) {
-      console.log("Teste Passou");
-      setErroPin(false);
-      setViewPass(false);
+    const { data: AuthData, error: authError } = await supabase.auth.signUp({
+      email: data.email,
+      password: data.password,
+    });
+
+    //Insere a senha na tabela Auth
+    if (authError) {
+      toast.error("Erro ao salvar os dados falha 1" + authError.message);
+      setLoading(false);
+      
+      return;
+    }
+    const userID = AuthData.user.id;
+
+    const { error: dbError } = await supabase.from("users").insert([
+      {
+        id: userID,
+        name: data.name,
+        email: data.email,
+        whatsapp: data.whatsapp,
+      },
+    ]);
+
+    if (dbError) {
+      toast.error("Erro ao salvar os dados falha 2" + authError.message);
+      setLoading(false);
+      return;
     } else {
-      setErroPin(true);
+      toast.success("Cadastro realizado com sucesso");
+      setLoading(false);
+      setPageAtiva("login");
+    }
+
+    setLoading(false);
+  };
+
+  const handleForgotPassword = async (data) => {
+    setLoading(true);
+
+    // 1. Salva o email para usar no próximo passo
+    setRecoveryEmail(data.emailRecovery);
+
+    // 2. Chama o Supabase
+    const { error } = await supabase.auth.signInWithOtp({
+      email: data.emailRecovery,
+      options: {
+        shouldCreateUser: false,
+      },
+    });
+
+    if (error) {
+      alert("Erro: " + error.message);
+    } else {
+      alert("Código enviado para seu email!");
+      setPageAtiva("pinCheck");
+    }
+    setLoading(false);
+  };
+
+  const handleNewPass = async (data) => {
+    setLoading(true);
+
+    const { data: sessionData, error: verifyError } =
+      await supabase.auth.verifyOtp({
+        email: recoveryEmail,
+        token: data.emailPin,
+        type: "email",
+      });
+
+    if (verifyError) {
+      toast.error("Código incorreto ou expirado", {
+        description: "Verifique o número e tente novamente.",
+      });
+      setLoading(false);
+      return;
+    }
+
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: data.password,
+    });
+    console.log(sessionData);
+
+    if (updateError) {
+      toast.error("Erro ao salvar a senha", {
+        description: updateError.message,
+      });
+    } else {
+      toast.success("Senha alterada com sucesso!", {
+        description: "Redirecionando para o login...",
+        duration: 2000,
+        onAutoClose: () => {
+          setRecoveryEmail("");
+          //setPageAtiva("login");
+        },
+      });
     }
     setLoading(false);
   };
@@ -488,21 +570,14 @@ const AuthPage = () => {
                   </span>
                 )}
               </div>
-              {erroPin ? (
-                <div className="flex items-center gap-3 p-3 mt-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400">
-                  <AlertCircle size={20} className="shrink-0" />
-                  <span className="text-sm font-medium">
-                    Código incorreto. Verifique e tente novamente.
-                  </span>
-                </div>
-              ) : null}
+
               <button
                 type="submit"
                 /* onClick={() => setPageAtiva("login")} */
                 className="w-full bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold py-3 rounded-lg hover:bg-gray-200 transition-colors flex items-center justify-center gap-2 mt-2"
               >
                 Trocar senha
-                {loading ? (
+                {loading === true ? (
                   <Loader2 className="animate-spin" size={20} />
                 ) : (
                   <ArrowRight size={18} />
@@ -544,6 +619,7 @@ const AuthPage = () => {
           ← Voltar para o Início
         </Link>
       )}
+      <Toaster richColors position="top-center" theme="dark" />
     </div>
   );
 };
