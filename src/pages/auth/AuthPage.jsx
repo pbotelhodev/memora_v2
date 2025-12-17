@@ -5,23 +5,36 @@ import {
   ArrowRight,
   Loader2,
   Phone,
-  Watch,
+  Shield,
+  Eye,
+  EyeOff,
+  AlertCircle,
+  XCircle,
 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 
 const AuthPage = () => {
-  const [pageAtive, setPageAtiva] = useState("login");
+  const [pageAtiva, setPageAtiva] = useState("pinCheck");
   const [loading, setLoading] = useState(false);
+  const [viewPass, setViewPass] = useState(false);
+  const [erroPin, setErroPin] = useState(false);
+  const pinMestre = 1234;
 
+  /* Hooks */
   const {
     register,
     handleSubmit,
     formState: { errors },
     getValues,
+    reset,
   } = useForm();
 
+  /* UseEffects */
+  useEffect(() => {
+    reset();
+  }, [pageAtiva, reset]);
   /* handles */
   const handleLogin = (data) => {
     setLoading(true);
@@ -42,11 +55,22 @@ const AuthPage = () => {
     setLoading(false);
   };
 
+  const handleNewPass = (data) => {
+    setLoading(true);
+    console.log(data);
+    if (data.emailPin == pinMestre) {
+      console.log("Teste Passou")
+      setErroPin(false);
+    } else {
+      setErroPin(true);
+    }
+    setLoading(false);
+    setViewPass(false)
+  };
+
   // Estilo de gradiente para o texto "recicle"
   const gradientRecicle =
     "bg-clip-text text-transparent bg-linear-to-r from-violet-600 to-cyan-500";
-
-  /* Funções */
 
   return (
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
@@ -64,8 +88,12 @@ const AuthPage = () => {
       {/* 2. O Card Principal */}
       <div className="w-full max-w-sm bg-slate-900 border border-zinc-800 rounded-2xl shadow-xl overflow-hidden">
         <div className="p-8">
+          {/* ============================================= */}
+          {/* ============================================= */}
+          {/* ============================================= */}
+          {/* ============================================= */}
           {/* =================== Login =================== */}
-          {pageAtive === "login" && (
+          {pageAtiva === "login" && (
             <form onSubmit={handleSubmit(handleLogin)} className="space-y-5">
               {/* Campo Email */}
               <div className="space-y-1">
@@ -78,7 +106,7 @@ const AuthPage = () => {
                     size={18}
                   />
                   <input
-                    {...register("emailLogin", { required: true })}
+                    {...register("emailLogin", { required: "Insira o email" })}
                     type="email"
                     placeholder="exemplo@email.com"
                     className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-zinc-600"
@@ -86,7 +114,7 @@ const AuthPage = () => {
                 </div>
                 {errors.emailLogin && (
                   <span className="text-red-500 text-xs">
-                    Email obrigatório
+                    {errors.emailLogin.message}
                   </span>
                 )}
               </div>
@@ -112,7 +140,7 @@ const AuthPage = () => {
                   />
                   <input
                     {...register("passwordLogin", {
-                      required: true,
+                      required: "Insira a sua senha",
                     })}
                     type="password"
                     placeholder="••••••••"
@@ -140,9 +168,12 @@ const AuthPage = () => {
               </button>
             </form>
           )}
-
+          {/* ================================================ */}
+          {/* ================================================ */}
+          {/* ================================================ */}
+          {/* ================================================ */}
           {/* =================== Register =================== */}
-          {pageAtive === "register" && (
+          {pageAtiva === "register" && (
             <form onSubmit={handleSubmit(handleCadastro)} className="space-y-5">
               {/* Campo Email */}
               <div className="space-y-1">
@@ -295,9 +326,12 @@ const AuthPage = () => {
               </button>
             </form>
           )}
-
+          {/* ======================================================= */}
+          {/* ======================================================= */}
+          {/* ======================================================= */}
+          {/* ======================================================= */}
           {/* =================== Esqueci a senha =================== */}
-          {pageAtive === "password" && (
+          {pageAtiva === "password" && (
             <form
               onSubmit={handleSubmit(handleForgotPassword)}
               className="space-y-5"
@@ -339,8 +373,40 @@ const AuthPage = () => {
               </button>
             </form>
           )}
-          {pageAtive === "pinCheck" && (
-            <form className="space-y-5">
+          {/* ========================================================== */}
+          {/* ========================================================== */}
+          {/* ========================================================== */}
+          {/* ========================================================== */}
+
+          {pageAtiva === "pinCheck" && (
+            <form onSubmit={handleSubmit(handleNewPass)} className="space-y-5">
+              {/* Campo PIN */}
+              <div className="space-y-1">
+                <div className="flex justify-between items-center ml-1">
+                  <label className="text-xs font-medium text-cyan-400">
+                    Código
+                  </label>
+                </div>
+                <div className="relative">
+                  <Shield
+                    className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500"
+                    size={18}
+                  />
+                  <input
+                    {...register("emailPin", {
+                      required: "Insira o código enviado por email",
+                    })}
+                    type="tel"
+                    placeholder="exemplo: 123456"
+                    className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-zinc-600"
+                  />
+                </div>
+                {errors.emailPin && (
+                  <span className="text-red-500 text-xs">
+                    {errors.emailPin.message}
+                  </span>
+                )}
+              </div>
               {/* Campo Senha */}
               <div className="space-y-1">
                 <div className="flex justify-between items-center ml-1">
@@ -354,19 +420,38 @@ const AuthPage = () => {
                     size={18}
                   />
                   <input
-                    {...register("newPassword", { required: true })}
-                    type="password"
+                    {...register("password", {
+                      required: "Insira a nova senha",
+                      minLength: {
+                        value: 10,
+                        message: "A senha precisa de 10 caracteres",
+                      },
+                      pattern: {
+                        value: /[!@#$%^&*(),.?":{}|<>]/,
+                        message:
+                          "Sua senha precisa ter pelo menos um caractere especial",
+                      },
+                    })}
+                    type={viewPass === true ? "password" : "text"}
                     placeholder="••••••••"
                     className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-zinc-600"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setViewPass(!viewPass)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-cyan-400 cursor-pointer transition-colors"
+                  >
+                    {viewPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
-                {errors.emailRecovery && (
+
+                {errors.password && (
                   <span className="text-red-500 text-xs">
-                    Insira a nova senha
+                    {errors.password.message}
                   </span>
                 )}
               </div>
-              {/* Campo Repetir Senha */}
+              {/* ===== Campo Repetir Senha ===== */}
               <div className="space-y-1">
                 <div className="flex justify-between items-center ml-1">
                   <label className="text-xs font-medium text-cyan-400">
@@ -379,18 +464,38 @@ const AuthPage = () => {
                     size={18}
                   />
                   <input
-                    {...register("repeatNewPassword", { required: true })}
-                    type="password"
+                    {...register("repeatPassword", {
+                      required: "Confirme sua nova senha",
+                      validate: (value) =>
+                        value === getValues("password") ||
+                        "As senhas não conferem",
+                    })}
+                    type={viewPass === true ? "password" : "text"}
                     placeholder="••••••••"
                     className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-zinc-600"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setViewPass(!viewPass)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-cyan-400 cursor-pointer transition-colors"
+                  >
+                    {viewPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
                 </div>
-                {errors.emailRecovery && (
+                {errors.repeatPassword && (
                   <span className="text-red-500 text-xs">
-                    Repita a nova senha
+                    {errors.repeatPassword.message}
                   </span>
                 )}
               </div>
+              {erroPin ? (
+                <div className="flex items-center gap-3 p-3 mt-4 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400">
+                  <AlertCircle size={20} className="shrink-0" />
+                  <span className="text-sm font-medium">
+                    Código incorreto. Verifique e tente novamente.
+                  </span>
+                </div>
+              ) : null}
               <button
                 type="submit"
                 /* onClick={() => setPageAtiva("login")} */
@@ -406,7 +511,7 @@ const AuthPage = () => {
             </form>
           )}
         </div>
-        {pageAtive === "login" && (
+        {pageAtiva === "login" && (
           <div className="bg-zinc-950/50 p-4 text-center border-t border-zinc-800">
             <p className="text-sm text-zinc-500">
               Ainda não possui uma conta?
@@ -423,7 +528,7 @@ const AuthPage = () => {
       </div>
 
       {/* Botão Voltar */}
-      {pageAtive !== "login" ? (
+      {pageAtiva !== "login" ? (
         <button
           type="button"
           onClick={() => setPageAtiva("login")}
