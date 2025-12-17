@@ -18,7 +18,7 @@ import { Toaster, toast } from "sonner";
 import { supabase } from "../../../supabaseClient";
 
 const AuthPage = () => {
-  const [pageAtiva, setPageAtiva] = useState("pinCheck");
+  const [pageAtiva, setPageAtiva] = useState("login");
   const [loading, setLoading] = useState(false);
   const [viewPass, setViewPass] = useState(false);
 
@@ -42,7 +42,7 @@ const AuthPage = () => {
   const handleLogin = (data) => {
     setLoading(true);
     
-    
+
 
 
     setLoading(false);
