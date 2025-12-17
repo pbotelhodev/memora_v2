@@ -18,7 +18,7 @@ import { useForm } from "react-hook-form";
 const AuthPage = () => {
   const [pageAtiva, setPageAtiva] = useState("pinCheck");
   const [loading, setLoading] = useState(false);
-  const [viewPass, setViewPass] = useState(false);
+  const [viewPass, setViewPass] = useState(true);
   const [erroPin, setErroPin] = useState(false);
   const pinMestre = 1234;
 
@@ -59,13 +59,13 @@ const AuthPage = () => {
     setLoading(true);
     console.log(data);
     if (data.emailPin == pinMestre) {
-      console.log("Teste Passou")
+      console.log("Teste Passou");
       setErroPin(false);
+      setViewPass(false);
     } else {
       setErroPin(true);
     }
     setLoading(false);
-    setViewPass(false)
   };
 
   // Estilo de gradiente para o texto "recicle"
@@ -432,7 +432,7 @@ const AuthPage = () => {
                           "Sua senha precisa ter pelo menos um caractere especial",
                       },
                     })}
-                    type={viewPass === true ? "password" : "text"}
+                    type={viewPass === true ? "text" : "password"}
                     placeholder="••••••••"
                     className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-zinc-600"
                   />
@@ -441,7 +441,7 @@ const AuthPage = () => {
                     onClick={() => setViewPass(!viewPass)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-cyan-400 cursor-pointer transition-colors"
                   >
-                    {viewPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {viewPass ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
                 </div>
 
@@ -470,7 +470,7 @@ const AuthPage = () => {
                         value === getValues("password") ||
                         "As senhas não conferem",
                     })}
-                    type={viewPass === true ? "password" : "text"}
+                    type={viewPass === true ? "text" : "password"}
                     placeholder="••••••••"
                     className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-zinc-600"
                   />
@@ -479,7 +479,7 @@ const AuthPage = () => {
                     onClick={() => setViewPass(!viewPass)}
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-cyan-400 cursor-pointer transition-colors"
                   >
-                    {viewPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                    {viewPass ? <Eye size={18} /> : <EyeOff size={18} />}
                   </button>
                 </div>
                 {errors.repeatPassword && (
