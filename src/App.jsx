@@ -4,7 +4,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 //Importação das páginas
 import Home from "./pages/public/Home";
 import EventFeed from "./pages/public/EventFeed";
-import Login from "./pages/auth/Login";
+import AuthPage from "./pages/auth/AuthPage";
 import Dashboard from "./pages/app/Dashboard";
 import CreateEvent from "./pages/app/CreateEvent";
 import ManageEvent from "./pages/app/ManageEvent";
@@ -19,7 +19,7 @@ function App() {
       <Routes>
         {/* ===== ÁREA PÚBLICA ===== */}
         <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<AuthPage />} />
 
         {/* Rota do evento com slug */}
         <Route path="/app/evento/:slug" element={<EventFeed />} />

@@ -32,16 +32,21 @@ const Footer = () => {
   return (
     // 1. O Container Principal (fundo preto, texto cinza claro para não cansar a vista)
     <footer className="bg-black text-gray-400 border-t border-gray-800 font-sans">
-      <div className="max-w-7xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="max-w-6xl mx-auto px-6 py-12 grid grid-cols-1 md:grid-cols-4 gap-8">
         <div className="space-y-4">
-          <h2 className="text-2xl font-bold text-white tracking-tight">
-            Memora.
+          <h2 className="text-2xl font-semibold text-white tracking-tight">
+            <span className="bg-clip-text text-transparent bg-linear-to-r from-violet-600 to-cyan-500">
+              memora
+            </span>
           </h2>
           <p className="text-sm leading-relaxed text-gray-500">
             Desenvolvido para conectar momentos reais.
           </p>
           <div className="flex gap-4">
-            <a href="#" className="hover:text-white transition-colors">
+            <a
+              href="https://www.instagram.com/appmemora_?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw=="
+              className="hover:text-white transition-colors"
+            >
               <Instagram size={20} />
             </a>
           </div>
@@ -108,7 +113,7 @@ const Footer = () => {
 
       {/* 3. Barra Inferior (Copyright + Smarttex) */}
       <div className="border-t border-gray-800 bg-gray-950">
-        <div className="max-w-7xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
+        <div className="max-w-6xl mx-auto px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-xs">
           <p>© 2025 Memora. All rights reserved.</p>
 
           <div className="flex items-center gap-2 text-gray-500">

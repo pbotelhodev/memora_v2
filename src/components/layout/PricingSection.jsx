@@ -16,10 +16,11 @@ const PricingSection = () => {
         { text: "1 Dia de rede social ativa", included: true },
         { text: "7 Dias Galeria Online", included: true },
         // A MÁGICA AQUI: Separamos o nome do preço extra
-        { text: "Vídeo", addon: "(+ R$ 19,90)", included: false },
+        { text: "Vídeo", addon: "+ R$ 19,90", included: false },
         { text: "Personalização", included: false },
       ],
       highlight: false,
+      badge: "Compacto",
     },
     {
       name: "Social",
@@ -31,10 +32,11 @@ const PricingSection = () => {
         { text: "50 Convidados", included: true },
         { text: "1 Dia de rede social ativa", included: true },
         { text: "7 Dias Galeria Online", included: true },
-        { text: "Vídeo", addon: "(+ R$ 19,90)", included: false },
+        { text: "Vídeo", addon: "+ R$ 19,90", included: false },
         { text: "Personalização", included: false },
       ],
       highlight: false,
+      badge: "Casual",
     },
     {
       name: "Celebration",
@@ -66,6 +68,7 @@ const PricingSection = () => {
         { text: "Marca Personalizada", included: true },
       ],
       highlight: false,
+      badge: "VIP",
     },
     {
       name: "Infinity",
@@ -81,6 +84,7 @@ const PricingSection = () => {
         { text: "Marca Personalizada", included: true },
       ],
       highlight: false,
+      badge: "Corporativo",
     },
   ];
 
@@ -99,8 +103,8 @@ const PricingSection = () => {
             </span>
           </h2>
           <p className="text-gray-200 text-lg">
-            "Valor único. Foco no agora: O que acontece na sua festa, fica na
-            sua festa."
+            Valor único. Foco no agora: O que acontece na sua festa, fica na sua
+            festa.
           </p>
         </div>
 
@@ -109,10 +113,10 @@ const PricingSection = () => {
           {plans.map((plan, index) => (
             <div
               key={index}
-              className={`relative w-full rounded-2xl p-6 transition-all duration-300 border backdrop-blur-sm group
+              className={`relative w-full rounded-2xl mt-3 md:mt-0 p-5 transition-all duration-300 border backdrop-blur-sm group
                 ${
                   plan.highlight
-                    ? "bg-slate-900/80 border-cyan-500/50 shadow-2xl shadow-cyan-900/10 lg:-translate-y-4 lg:py-10 z-10"
+                    ? "bg-slate-900/80 border-cyan-500/50 shadow-2xl shadow-cyan-900/10 lg:-translate-y-4 lg:py-12 z-10"
                     : "bg-slate-900/30 border-white/5 hover:border-white/10 hover:bg-slate-900/50"
                 }
               `}
