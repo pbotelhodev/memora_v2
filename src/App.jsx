@@ -1,5 +1,6 @@
 //Importação das bibliotecas de roteamento
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Toaster } from "sonner";
 
 //Importação das páginas
 import Home from "./pages/public/Home";
@@ -10,21 +11,19 @@ import CreateEvent from "./pages/app/CreateEvent";
 import ManageEvent from "./pages/app/ManageEvent";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
-
 //App
 function App() {
-
   return (
     <BrowserRouter>
+      <Toaster richColors position="top-center" theme="dark" />
       <Routes>
         {/* ===== ÁREA PÚBLICA ===== */}
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<AuthPage />} />
 
-        {/* Rota do evento com slug */}
-        <Route path="/app/evento/:slug" element={<EventFeed />} />
-
         {/* ===== ÁREA DO CLIENTE ===== */}
+        {/* Rota do painel do evento com slug */}
+        <Route path="/app/evento/:slug" element={<EventFeed />} />
         <Route path="/app/dashboard" element={<Dashboard />} />
         <Route path="/app/criar" element={<CreateEvent />} />
         <Route path="/app/evento/:slug/gerenciar" element={<ManageEvent />} />
@@ -35,10 +34,6 @@ function App() {
       </Routes>
     </BrowserRouter>
   );
-
-
-
-
 }
 
 export default App;

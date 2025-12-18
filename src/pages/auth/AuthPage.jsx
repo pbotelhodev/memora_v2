@@ -8,16 +8,17 @@ import {
   Shield,
   Eye,
   EyeOff,
-  AlertCircle,
-  XCircle,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import { Toaster, toast } from "sonner";
+import { toast } from "sonner";
 import { supabase } from "../../../supabaseClient";
 
 const AuthPage = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const [pageAtiva, setPageAtiva] = useState("login");
   const [loading, setLoading] = useState(false);
   const [viewPass, setViewPass] = useState(false);
@@ -39,13 +40,22 @@ const AuthPage = () => {
   }, [pageAtiva, reset]);
 
   /* handles */
-  const handleLogin = (data) => {
+  const handleLogin = async (data) => {
     setLoading(true);
-    
+    const destination = location.state?.destino || "/app/dashboard";
 
-
-
-    setLoading(false);
+    const { error } = await supabase.auth.signInWithPassword({
+      email: data.emailLogin,
+      password: data.passwordLogin,
+    });
+    if (error) {
+      toast.error("Email ou senha incorretos");
+      setLoading(false);
+      return;
+    } else {
+      toast.success("Bem-vindo de volta!");
+      navigate(destination);
+    }
   };
 
   const handleCadastro = async (data) => {
@@ -60,7 +70,7 @@ const AuthPage = () => {
     if (authError) {
       toast.error("Erro ao salvar os dados falha 1" + authError.message);
       setLoading(false);
-      
+
       return;
     }
     const userID = AuthData.user.id;
@@ -75,13 +85,14 @@ const AuthPage = () => {
     ]);
 
     if (dbError) {
-      toast.error("Erro ao salvar os dados falha 2" + authError.message);
+      toast.error("Erro ao salvar os dados falha 2" + dbError.message);
       setLoading(false);
       return;
     } else {
       toast.success("Cadastro realizado com sucesso");
       setLoading(false);
       setPageAtiva("login");
+      navigate("/login");
     }
 
     setLoading(false);
@@ -102,9 +113,9 @@ const AuthPage = () => {
     });
 
     if (error) {
-      alert("Erro: " + error.message);
+      toast.error("Erro: " + error.message);
     } else {
-      alert("Código enviado para seu email!");
+      toast.success("Código enviado para seu email!");
       setPageAtiva("pinCheck");
     }
     setLoading(false);
@@ -143,7 +154,7 @@ const AuthPage = () => {
         duration: 2000,
         onAutoClose: () => {
           setRecoveryEmail("");
-          //setPageAtiva("login");
+          setPageAtiva("login");
         },
       });
     }
@@ -158,12 +169,12 @@ const AuthPage = () => {
     <div className="min-h-screen bg-slate-950 flex flex-col items-center justify-center p-4">
       {/* 1. Header (Logo) */}
       <div className="mb-8 text-center">
-        <Link
-          to="/"
+        <a
+          href="/"
           className="text-3xl font-bold text-white tracking-tight hover:opacity-80 transition-opacity"
         >
           <span className={gradientRecicle}>memora</span>
-        </Link>
+        </a>
         <p className="text-zinc-300 text-sm mt-2">Bem-vindo de volta</p>
       </div>
 
@@ -224,10 +235,17 @@ const AuthPage = () => {
                     {...register("passwordLogin", {
                       required: "Insira a sua senha",
                     })}
-                    type="password"
+                    type={viewPass === true ? "text" : "password"}
                     placeholder="••••••••"
                     className="w-full bg-zinc-950 border border-zinc-800 text-white rounded-lg py-3 pl-10 pr-4 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all placeholder:text-zinc-600"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setViewPass(!viewPass)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-cyan-400 cursor-pointer transition-colors"
+                  >
+                    {viewPass ? <Eye size={18} /> : <EyeOff size={18} />}
+                  </button>
                 </div>
                 {errors.passwordLogin && (
                   <span className="text-red-500 text-xs">
@@ -612,14 +630,14 @@ const AuthPage = () => {
           ← Voltar para o Login
         </button>
       ) : (
-        <Link
-          to="/"
+        <a
+          href="/"
           className="mt-8 text-sm text-zinc-600 hover:text-cyan-400 transition-colors"
         >
           ← Voltar para o Início
-        </Link>
+        </a>
       )}
-      <Toaster richColors position="top-center" theme="dark" />
+      
     </div>
   );
 };
