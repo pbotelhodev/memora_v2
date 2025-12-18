@@ -3,10 +3,11 @@ import { ArrowLeft } from "lucide-react"; // O ícone da setinha
 import CreateEvent from "../../components/layout/CreateEvent";
 import CreatePlans from "../../components/layout/CreatePlans";
 import ReviewPlan from "../../components/layout/ReviewPlan";
-import { useState } from "react";
+import Payment from "../../components/layout/PaymentPlan";
+
 
 const CreateEventPage = () => {
-  const [activePage, setActivePage] = useState('review')
+  const activePage = 'payment'
 
   return (
     // Adicionei 'relative' aqui para poder posicionar a setinha de forma absoluta
@@ -38,6 +39,12 @@ const CreateEventPage = () => {
           <ReviewPlan />
         </div>
       )}
+      {activePage === "payment" && (
+        <div className="flex-1 flex items-center justify-center p-4">
+          <Payment />
+        </div>
+      )}
+      
     </div>
   );
 };

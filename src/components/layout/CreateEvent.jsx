@@ -11,14 +11,6 @@ import {
 const CreateEvent = () => {
   return (
     <div className="w-full max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 px-4 mt-10">
-      <style>{`
-        ::-webkit-calendar-picker-indicator {
-          filter: invert(1);
-          opacity: 0.5;
-          cursor: pointer;
-        }
-      `}</style>
-      
       {/* Cabeçalho Limpo */}
       <div className="mb-12 text-center">
         <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
@@ -99,10 +91,10 @@ const CreateEvent = () => {
 
         {/* 3. Grid Data e Hora */}
 
-        <div className="grid grid-cols-2 gap-6">
+        <div className="grid grid-cols-12 gap-6">
           {/* Data */}
 
-          <div className="group">
+          <div className="group col-span-7">
             <label className="block text-[10px] font-bold text-cyan-500 uppercase tracking-widest mb-1 ml-1">
               Data
             </label>
@@ -122,7 +114,7 @@ const CreateEvent = () => {
 
           {/* Hora */}
 
-          <div className="group">
+          <div className="group col-span-5">
             <label className="block text-[10px] font-bold text-cyan-500 uppercase tracking-widest mb-1 ml-1">
               Horário
             </label>
@@ -164,14 +156,14 @@ const CreateEvent = () => {
 
         {/* Botão Next Minimalista */}
 
-        <div className="pt-10 flex justify-end">
+        <div className="pt-2 flex justify-end">
           <button
             type="submit"
             className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors duration-300"
           >
             <span className="text-lg font-medium tracking-wide">Próximo</span>
 
-            <div className="p-2 rounded-full border border-white/10 group-hover:border-cyan-500 group-hover:bg-cyan-500/10 transition-all duration-300">
+            <div className="p-2 rounded-full border border-white/10 group-hover:border-emerald-500 group-hover:bg-emerald-500/10 transition-all duration-300">
               <ChevronRight
                 size={20}
                 className="text-cyan-500 transition-transform group-hover:translate-x-0.5"

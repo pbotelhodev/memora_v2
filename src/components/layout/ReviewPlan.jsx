@@ -1,17 +1,17 @@
-import React, { useState } from "react";
+
 import {
   ChevronRight,
   ChevronLeft,
   Calendar,
   MapPin,
   Link as LinkIcon,
-  CheckCircle2,
+  CheckCircle2, 
   Gem,
   Lock,
 } from "lucide-react";
 
 const ReviewPlans = () => {
-  const [infinityPlan, setInfinityPlan] = useState(false);
+  const infinityPlan = true
   const linkEvento = "aSJKDJW22"
 
   return (
@@ -75,7 +75,7 @@ const ReviewPlans = () => {
 
         {/* BLOCO B: INPUT DE LINK (Estilo Input Borda Inferior) */}
         <div className="group">
-          <label className="block text-[10px] font-bold text-cyan-500 uppercase tracking-widest mb-2 ml-1 flex items-center gap-2">
+          <label className="block text-[10px] font-bold text-cyan-500 uppercase tracking-widest mb-2 ml-1 items-center gap-2">
             <LinkIcon size={12} />
             Link do Evento
           </label>
@@ -98,8 +98,7 @@ const ReviewPlans = () => {
                 </div>
               </div>
               <p className="text-[10px] text-emerald-400/70 mt-2 ml-1 flex items-center gap-1">
-                <Gem size={10} /> Benefício Infinity: Link personalizado
-                liberado.
+                <Gem size={10} /> Benefício Infinity: O link pode ser personalizado.
               </p>
             </div>
           )}
