@@ -60,7 +60,7 @@ const Header = () => {
         <div className="text-2xl font-bold text-white cursor-pointer ">
           <Link to="/">
             <img src={logoMemora} className="w-28 h-auto" alt="Logo memora" />
-          </Link>
+          </Link>  
         </div>
 
         {/* ================================================= */}

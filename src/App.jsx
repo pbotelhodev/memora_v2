@@ -7,7 +7,7 @@ import Home from "./pages/public/Home";
 import EventFeed from "./pages/public/EventFeed";
 import AuthPage from "./pages/auth/AuthPage";
 import Dashboard from "./pages/app/Dashboard";
-import CreateEvent from "./pages/app/CreateEvent";
+import CreateEvent from "./pages/app/CreateEventPage";
 import ManageEvent from "./pages/app/ManageEvent";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 
