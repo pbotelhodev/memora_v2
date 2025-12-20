@@ -9,7 +9,7 @@ import {
   Star,
 } from "lucide-react";
 import { useForm } from "react-hook-form";
-import CardPlan from "../../components/ui/cardPlan";
+import CardPlan from "../../components/ui/CardPlan";
 
 const CreatePlans = ({ onNext, onPrev }) => {
   const { register, handleSubmit, watch } = useForm({
