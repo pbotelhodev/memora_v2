@@ -10,13 +10,13 @@ const CreateEventPage = () => {
   const [activePage, setActivePage] = useState(1);
   const [globalData, setGlobalData] = useState({});
 
-  const nextStep = () => setActivePage((prev) => prev + 1);
+  const nextStep = () => setActivePage((prev) => prev + (activePage === 4 ? 0 : 1));
   const prevStep = () => setActivePage((prev) => prev - 1);
 
   const handleSaveStep = (dataForm) => {
     setGlobalData((prev) => ({ ...prev, ...dataForm }));
     nextStep();
-    console.log(globalData);
+    console.log(dataForm);
   };
 
 
@@ -56,7 +56,11 @@ const CreateEventPage = () => {
       )}
       {activePage === 4 && (
         <div className="flex-1 flex items-center justify-center p-4">
-          <Payment onNext={handleSaveStep} onPrev={prevStep} />
+          <Payment
+            onNext={handleSaveStep}
+            onPrev={prevStep}
+            formData={globalData}
+          />
         </div>
       )}
     </div>

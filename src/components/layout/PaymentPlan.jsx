@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import {
   ChevronRight,
   ChevronLeft,
@@ -13,26 +14,50 @@ import {
   X,
   CheckCircle2,
   Home,
-  ShieldCheck,
-  Calendar,
   Lock,
   Download,
   Building,
+  Hash,
+  PlusCircle,
 } from "lucide-react";
 
-const PaymentPlan = ({ onPrev }) => {
+const PaymentPlan = ({ onPrev, onNext, formData }) => {
   // Lógica de Navegação do Checkout
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentStep, setPaymentStep] = useState("select"); // 'select', 'pix', 'card', 'boleto'
+  const [infoUser, setInfoUser] = useState();
 
-  const handleOpenModal = () => setIsModalOpen(true);
+  const { register, handleSubmit } = useForm();
+
+  const handleOpenModal = () => {
+    setIsModalOpen(true);
+  };
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setPaymentStep("select");
   };
 
+  const handleDataFisco = (data) => {
+    setInfoUser(data);
+    setIsModalOpen(true);
+  };
+
+  const handleFinalize = () => {
+    const payLoad = {
+      ...formData,
+      infoUser: infoUser,
+      payment_method: paymentStep,
+      status: "Aguardando Aprovação",
+    };
+
+    onNext(payLoad);
+  };
+
   return (
-    <div className="relative font-sans flex items-center justify-center selection:bg-cyan-500/30 ">
+    <form
+      onSubmit={handleSubmit(handleDataFisco)}
+      className="relative font-sans flex items-center justify-center selection:bg-cyan-500/30 "
+    >
       {/* ====================================================================================
           1. TELA PRINCIPAL: DADOS DE ENDEREÇO
       ==================================================================================== */}
@@ -50,7 +75,8 @@ const PaymentPlan = ({ onPrev }) => {
             </span>
           </h2>
           <p className="text-zinc-500 text-sm tracking-wide">
-            Confirme os dados para finalizar sua ativação.
+            Garanta a exclusividade do seu evento e libere seu acesso imediato
+            ao painel.
           </p>
         </div>
 
@@ -70,6 +96,9 @@ const PaymentPlan = ({ onPrev }) => {
                 size={20}
               />
               <input
+                {...register("cpf", {
+                  required: "Insira o seu CPF/CNPJ.",
+                })}
                 type="text"
                 placeholder="CPF ou CNPJ"
                 className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
@@ -78,53 +107,100 @@ const PaymentPlan = ({ onPrev }) => {
 
             {/* Grid Endereço */}
             <div className="grid grid-cols-4 gap-x-6 gap-y-6">
+              {/* LINHA 1: CEP e UF */}
               <div className="col-span-2 relative group">
                 <MapPin
                   className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-cyan-500 transition-colors"
                   size={20}
                 />
                 <input
+                  {...register("cep", { required: true })}
                   type="text"
                   placeholder="CEP"
                   className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
                 />
               </div>
+
               <div className="col-span-2 relative group">
                 <Building
                   className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-cyan-400 transition-colors"
                   size={20}
                 />
                 <input
+                  {...register("state", { required: true })}
                   type="text"
                   placeholder="Estado (UF)"
                   className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
                 />
               </div>
 
-              <div className="col-span-3 relative group">
+              {/* LINHA 2 (NOVA): Cidade e Bairro */}
+              <div className="col-span-2 relative group">
+                <Building
+                  className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-cyan-500 transition-colors"
+                  size={20}
+                />
+                <input
+                  {...register("city", { required: true })}
+                  type="text"
+                  placeholder="Cidade"
+                  className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
+                />
+              </div>
+
+              <div className="col-span-2 relative group">
+                <MapPin
+                  className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-cyan-400 transition-colors"
+                  size={20}
+                />
+                <input
+                  {...register("neighborhood", { required: true })}
+                  type="text"
+                  placeholder="Bairro"
+                  className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
+                />
+              </div>
+
+              {/* LINHA 3: Rua (Full Width para caber nomes longos) */}
+              <div className="col-span-4 relative group">
                 <Home
                   className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-cyan-400 transition-colors"
                   size={20}
                 />
                 <input
+                  {...register("street", { required: true })}
                   type="text"
                   placeholder="Rua / Avenida"
                   className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
                 />
               </div>
-              <div className="col-span-1">
+
+              {/* LINHA 4: Número e Complemento */}
+              <div className="col-span-1 relative group">
+                <Hash
+                  className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-cyan-500 transition-colors"
+                  size={20}
+                />
                 <input
-                  type="text"
+                  {...register("number", { required: true })}
+                  type="tel"
                   placeholder="Nº"
-                  className="w-full bg-transparent border-b border-white/10 py-4 text-center text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
+                  // Removi 'text-center' e adicionei 'pl-9' para caber o ícone
+                  className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
                 />
               </div>
 
-              <div className="col-span-4">
+              <div className="col-span-3 relative group">
+                <PlusCircle
+                  className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-600 group-focus-within:text-cyan-500 transition-colors"
+                  size={20}
+                />
                 <input
+                  {...register("complement")}
                   type="text"
                   placeholder="Complemento (Opcional)"
-                  className="w-full bg-transparent border-b border-white/10 py-4 pl-2 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
+                  // Mudei de 'pl-2' para 'pl-9' para caber o ícone
+                  className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
                 />
               </div>
             </div>
@@ -134,6 +210,7 @@ const PaymentPlan = ({ onPrev }) => {
         {/* Botões de Ação Inferiores */}
         <div className="pt-6 flex justify-between items-center">
           <button
+            type="button"
             className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors"
             onClick={onPrev}
           >
@@ -147,6 +224,7 @@ const PaymentPlan = ({ onPrev }) => {
           </button>
 
           <button
+            type="submit"
             onClick={handleOpenModal}
             className="group flex items-center gap-4 px-8 py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg shadow-[0_10px_30px_-10px_rgba(6,182,212,0.5)] hover:scale-105 active:scale-95 transition-all"
           >
@@ -165,6 +243,7 @@ const PaymentPlan = ({ onPrev }) => {
           <div className="w-full max-w-sm bg-zinc-900 border border-white/10 rounded-2xl p-8 relative flex flex-col items-center shadow-[0_0_50px_-10px_rgba(139,92,246,0.25)] animate-in zoom-in-95 slide-in-from-bottom-8">
             {/* Botão Fechar */}
             <button
+              type="button"
               onClick={handleCloseModal}
               className="absolute top-6 right-6 text-zinc-500 hover:text-white transition-colors"
             >
@@ -186,6 +265,7 @@ const PaymentPlan = ({ onPrev }) => {
 
                 <div className="grid grid-cols-1 gap-4">
                   <button
+                    type="button"
                     onClick={() => setPaymentStep("pix")}
                     className="flex items-center gap-5 p-4 rounded-xl border border-white/5 bg-zinc-950/40 hover:border-cyan-500 group transition-all duration-300"
                   >
@@ -203,6 +283,7 @@ const PaymentPlan = ({ onPrev }) => {
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => setPaymentStep("card")}
                     className="flex items-center gap-5 p-4 rounded-xl border border-white/5 bg-zinc-950/40 hover:border-violet-500 group transition-all duration-300"
                   >
@@ -214,12 +295,13 @@ const PaymentPlan = ({ onPrev }) => {
                         Cartão de Crédito
                       </p>
                       <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-tighter">
-                        Até 12x no cartão
+                        Até 10x no cartão
                       </p>
                     </div>
                   </button>
 
                   <button
+                    type="button"
                     onClick={() => setPaymentStep("boleto")}
                     className="flex items-center gap-5 p-4 rounded-xl border border-white/5 bg-zinc-950/40 hover:border-zinc-400 group transition-all duration-300"
                   >
@@ -260,12 +342,19 @@ const PaymentPlan = ({ onPrev }) => {
                     readOnly
                     className="w-full bg-zinc-950 border border-white/10 rounded-xl py-4 pl-5 pr-14 text-xs text-zinc-500 font-mono focus:outline-none"
                   />
-                  <button className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-cyan-500 bg-cyan-500/10 rounded-lg">
+                  <button
+                    type="button"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-cyan-500 bg-cyan-500/10 rounded-lg"
+                  >
                     <Copy size={20} />
                   </button>
                 </div>
 
-                <button className="w-full py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(6,182,212,0.5)]">
+                <button
+                  type="button"
+                  onClick={handleFinalize}
+                  className="w-full py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(6,182,212,0.5)]"
+                >
                   JÁ PAGUEI <CheckCircle2 size={20} />
                 </button>
               </div>
@@ -317,7 +406,11 @@ const PaymentPlan = ({ onPrev }) => {
                     />
                   </div>
                 </div>
-                <button className="w-full py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg active:scale-95 transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(139,92,246,0.5)]">
+                <button
+                  type="button"
+                  onClick={handleFinalize}
+                  className="w-full py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg active:scale-95 transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(139,92,246,0.5)]"
+                >
                   PAGAR AGORA <Lock size={18} />
                 </button>
               </div>
@@ -345,16 +438,26 @@ const PaymentPlan = ({ onPrev }) => {
                       readOnly
                       className="w-full bg-zinc-950 border border-white/10 rounded-xl py-4 pl-4 pr-12 text-[10px] text-zinc-400 font-mono shadow-inner"
                     />
-                    <button className="absolute right-3 top-1/2 -translate-y-1/2 text-white p-2 hover:bg-white/10 rounded-lg">
+                    <button
+                      type="button"
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white p-2 hover:bg-white/10 rounded-lg"
+                    >
                       <Copy size={18} />
                     </button>
                   </div>
-                  <button className="w-full py-4 rounded-xl border border-white/10 text-zinc-300 font-bold text-sm hover:bg-white/5 transition-all flex items-center justify-center gap-3 uppercase tracking-widest">
+                  <button
+                    type="button"
+                    className="w-full py-4 rounded-xl border border-white/10 text-zinc-300 font-bold text-sm hover:bg-white/5 transition-all flex items-center justify-center gap-3 uppercase tracking-widest"
+                  >
                     BAIXAR PDF <Download size={20} />
                   </button>
                 </div>
 
-                <button className="w-full py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg active:scale-95 transition-all">
+                <button
+                  type="button"
+                  onClick={handleFinalize}
+                  className="w-full py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg active:scale-95 transition-all"
+                >
                   JÁ PAGUEI
                 </button>
               </div>
@@ -363,6 +466,7 @@ const PaymentPlan = ({ onPrev }) => {
             {/* Voltar para escolha de método */}
             {paymentStep !== "select" && (
               <button
+                type="button"
                 onClick={() => setPaymentStep("select")}
                 className="mt-8 text-[11px] font-bold text-zinc-600 hover:text-cyan-400 uppercase tracking-[0.2em] flex items-center gap-2 transition-all"
               >
@@ -372,7 +476,7 @@ const PaymentPlan = ({ onPrev }) => {
           </div>
         </div>
       )}
-    </div>
+    </form>
   );
 };
 

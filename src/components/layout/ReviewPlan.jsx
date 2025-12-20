@@ -28,7 +28,7 @@ const ReviewPlan = ({ formData, onNext, onPrev }) => {
     plano: formData.plan_tier,
   };
 
-  const { register, handleSubmit, watch } = useForm({
+  const { register, handleSubmit } = useForm({
     defaultValues: {
       slug: formData.slug || "",
     },
@@ -83,9 +83,6 @@ const ReviewPlan = ({ formData, onNext, onPrev }) => {
 
   const slugFree =
     activePlan.plano === "Infinity" || activePlan.plano === "Black";
-  const customSlug = watch("slug");
-  const finalSlug = slugFree ? customSlug : randomSlug;
-
 
   //Seta o slug no objeto
   const setPlan = (data) => {
@@ -181,7 +178,9 @@ const ReviewPlan = ({ formData, onNext, onPrev }) => {
                   memora.com/
                 </span>
                 <input
-                  {...register("slug")}
+                  {...register("slug", {
+                    required: "Personalize o link do seu evento.",
+                  })}
                   type="text"
                   placeholder="Seu-evento"
                   className="bg-transparent text-white placeholder-zinc-700 focus:outline-none w-full text-base font-bold tracking-wide"
