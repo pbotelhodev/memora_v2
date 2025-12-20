@@ -8,13 +8,46 @@ import {
   ChevronDown,
 } from "lucide-react";
 
-const CreateEvent = () => {
+import LoadingOverlay from "../ui/LoadingOverlay";
+import { useState } from "react";
+
+import { useForm } from "react-hook-form";
+
+const CreateEvent = ({ onNext }) => {
+  const [loading, setLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+
+    /* formState: { errors },
+    getValues,
+    reset, */
+  } = useForm({
+    defaultValues: {
+      event_name: "", 
+      category: "", 
+      location: "", 
+      date_event: "", 
+      time_event: "",
+    },
+  });
+
+  const handlePartyInfo = (data) => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      onNext(data);
+    }, 2000);
+  };
   return (
-    <div className="w-full max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 px-4 mt-10">
+    <form
+      onSubmit={handleSubmit(handlePartyInfo)}
+      className="w-full max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 px-4 mt-10"
+    >
       {/* Cabeçalho Limpo */}
       <div className="mb-12 text-center">
         <h2 className="text-2xl font-bold text-white mb-2 tracking-tight">
-          Desenha sua{" "}
+          Desenhe seu{" "}
           <span className="text-transparent bg-clip-text bg-linear-to-r from-violet-500 to-cyan-400">
             Momento
           </span>
@@ -24,7 +57,6 @@ const CreateEvent = () => {
           Detalhes essenciais do seu evento.
         </p>
       </div>
-
       <div className="space-y-8">
         {/* 1. Nome do Evento */}
 
@@ -40,6 +72,9 @@ const CreateEvent = () => {
             />
 
             <input
+              {...register("event_name", {
+                required: "Insira o nome do seu evento.",
+              })}
               type="text"
               placeholder="Ex: Casamento P&M..."
               className="w-full bg-transparent border-b border-white/10 py-3 pl-8 text-white placeholder-zinc-700 focus:outline-none focus:border-cyan-500 transition-all text-base"
@@ -65,25 +100,48 @@ const CreateEvent = () => {
               size={16}
             />
 
-            <select className="w-full bg-transparent border-b border-white/10 py-3 pl-8 pr-6 text-white focus:outline-none focus:border-cyan-500 transition-all appearance-none cursor-pointer text-base">
-              <option value="" className="bg-slate-950 text-zinc-500">
-                Selecione...
+            <select
+              className="w-full bg-transparent border-b border-white/10 py-3 pl-8 pr-6 text-white focus:outline-none focus:border-cyan-500 transition-all appearance-none cursor-pointer text-base"
+              {...register("category", {
+                required: "Selecione a categoria.",
+              })}
+              
+            >
+              <option value="" disabled className="bg-slate-900 text-zinc-500">
+                Selecione a vibe do evento...
               </option>
-
-              <option value="aniversario" className="bg-slate-900">
-                Aniversário
+              <option
+                value="viagem"
+                className="bg-slate-900 text-zinc-100 py-2"
+              >
+                ✈️ Viagens, Churrascos & Social
               </option>
-
-              <option value="casamento" className="bg-slate-900">
-                Casamento
+              <option
+                value="aniversario"
+                className="bg-slate-900 text-zinc-100 py-2"
+              >
+                🎂 Aniversários, Chás & Batizados
               </option>
-
-              <option value="corporativo" className="bg-slate-900">
-                Corporativo
+              <option
+                value="casamento"
+                className="bg-slate-900 text-zinc-100 py-2"
+              >
+                💍 Casamentos & Bodas
               </option>
-
-              <option value="outros" className="bg-slate-900">
-                Outros
+              <option value="show" className="bg-slate-900 text-zinc-100 py-2">
+                🪩 Shows & Baladas
+              </option>
+              <option
+                value="corporativo"
+                className="bg-slate-900 text-zinc-100 py-2"
+              >
+                💼 Corporate & Business
+              </option>
+              <option
+                value="outros"
+                className="bg-slate-900 text-zinc-100 py-2"
+              >
+                🎲 Outros
               </option>
             </select>
           </div>
@@ -106,6 +164,9 @@ const CreateEvent = () => {
               />
 
               <input
+                {...register("date_event", {
+                  required: "Selecione a data do evento.",
+                })}
                 type="date"
                 className="w-full bg-transparent border-b border-white/10 py-3 pl-8 text-white focus:outline-none focus:border-cyan-500 transition-all text-base schema-dark"
               />
@@ -126,6 +187,9 @@ const CreateEvent = () => {
               />
 
               <input
+                {...register("time_event", {
+                  required: "Selecione o horário do evento.",
+                })}
                 type="time"
                 className="w-full bg-transparent border-b border-white/10 py-3 pl-8 text-white focus:outline-none focus:border-cyan-500 transition-all text-base schema-dark"
               />
@@ -148,6 +212,7 @@ const CreateEvent = () => {
 
             <input
               type="text"
+              {...register("location")}
               placeholder="Ex: Espaço Garden..."
               className="w-full bg-transparent border-b border-white/10 py-3 pl-8 text-white placeholder-zinc-700 focus:outline-none focus:border-cyan-500 transition-all text-base"
             />
@@ -172,7 +237,8 @@ const CreateEvent = () => {
           </button>
         </div>
       </div>
-    </div>
+      {loading && <LoadingOverlay />}
+    </form>
   );
 };
 

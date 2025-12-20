@@ -1,22 +1,111 @@
-
 import {
   ChevronRight,
   ChevronLeft,
   Calendar,
   MapPin,
   Link as LinkIcon,
-  CheckCircle2, 
+  CheckCircle2,
   Gem,
   Lock,
+  Zap,
+  Palette,
+  Star,
+  Crown,
 } from "lucide-react";
+import { nanoid } from "nanoid";
+import LoadingOverlay from "../ui/LoadingOverlay";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
 
-const ReviewPlans = () => {
-  const infinityPlan = true
-  const linkEvento = "aSJKDJW22"
+const ReviewPlan = ({ formData, onNext, onPrev }) => {
+  const [loading, setLoading] = useState(false);
+  const [randomSlug] = useState(() => nanoid(10));
+
+  const activePlan = {
+    nome: formData.event_name,
+    data: formData.date_event,
+    location: formData.location,
+    plano: formData.plan_tier,
+  };
+
+  const { register, handleSubmit, watch } = useForm({
+    defaultValues: {
+      slug: formData.slug || "",
+    },
+  });
+
+  const plansInfo = {
+    Infinity: {
+      name: "Infinity",
+      value: "R$ 199,90",
+      icon: Gem,
+      // Classes completas aqui:
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/20",
+      text: "text-emerald-400",
+    },
+    Black: {
+      name: "Black Edition",
+      value: "R$ 149,90",
+      icon: Crown,
+      bg: "bg-zinc-500/10",
+      border: "border-zinc-500/20",
+      text: "text-zinc-400",
+    },
+    Celebration: {
+      name: "Celebration",
+      value: "R$ 99,90",
+      icon: Star,
+      bg: "bg-violet-500/10",
+      border: "border-violet-500/20",
+      text: "text-violet-400",
+    },
+    Social: {
+      name: "Social",
+      value: "R$ 59,90",
+      icon: Palette,
+      bg: "bg-cyan-500/10",
+      border: "border-cyan-500/20",
+      text: "text-cyan-400",
+    },
+    Pocket: {
+      name: "Pocket",
+      value: "R$ 29,90",
+      icon: Zap,
+      bg: "bg-amber-500/10",
+      border: "border-amber-500/20",
+      text: "text-amber-400",
+    },
+  };
+
+  const PlanIcon = plansInfo[activePlan.plano].icon;
+  const currentPlan = plansInfo[activePlan.plano];
+
+  const slugFree =
+    activePlan.plano === "Infinity" || activePlan.plano === "Black";
+  const customSlug = watch("slug");
+  const finalSlug = slugFree ? customSlug : randomSlug;
+
+
+  //Seta o slug no objeto
+  const setPlan = (data) => {
+    setLoading(true);
+
+    const finalSlug = slugFree ? data.slug : randomSlug;
+    onNext({
+      ...formData,
+      slug: finalSlug,
+    });
+
+    setLoading(false);
+  };
 
   return (
     // ESTRUTURA FIXA (LOCK SCREEN) - SEM BG-ZINC-950
-    <div className="w-full max-w-lg mx-auto px-4  flex flex-col justify-between overflow-hidden py-6">
+    <form
+      onSubmit={handleSubmit(setPlan)}
+      className="w-full max-w-lg mx-auto px-4  flex flex-col justify-between overflow-hidden py-6"
+    >
       {/* 1. CABEÇALHO */}
       <div className="flex-none text-center mb-4">
         <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">
@@ -40,13 +129,15 @@ const ReviewPlans = () => {
               <span className="text-[10px] font-bold text-cyan-500 uppercase tracking-widest block mb-1">
                 Evento
               </span>
-              <h3 className="text-lg font-bold text-white">Casamento P&M</h3>
+              <h3 className="text-lg font-bold text-white">
+                {activePlan.nome}
+              </h3>
               <div className="flex items-center gap-3 text-xs text-zinc-500 mt-1">
                 <div className="flex items-center gap-1">
-                  <Calendar size={12} /> <span>24/10/2025</span>
+                  <Calendar size={12} /> <span>{activePlan.data}</span>
                 </div>
                 <div className="flex items-center gap-1">
-                  <MapPin size={12} /> <span>Espaço Garden</span>
+                  <MapPin size={12} /> <span>{activePlan.location}</span>
                 </div>
               </div>
             </div>
@@ -55,19 +146,23 @@ const ReviewPlans = () => {
           {/* Linha 2: Plano Selecionado */}
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg border bg-emerald-500/10 border-emerald-500/20 text-emerald-400">
-                <Gem size={20} />
+              <div
+                className={`p-2 rounded-lg border ${currentPlan.bg} ${currentPlan.border} ${currentPlan.text}`}
+              >
+                <PlanIcon size={20} />
               </div>
               <div>
                 <span className="text-[10px] text-zinc-500 uppercase tracking-widest block">
                   Plano Escolhido
                 </span>
-                <span className="text-sm font-bold text-white">Infinity</span>
+                <span className="text-sm font-bold text-white">
+                  {plansInfo[activePlan.plano].name}
+                </span>
               </div>
             </div>
             <div className="text-right">
               <span className="block text-xl font-bold text-white">
-                R$ 199,90
+                {plansInfo[activePlan.plano].value}
               </span>
             </div>
           </div>
@@ -79,44 +174,52 @@ const ReviewPlans = () => {
             <LinkIcon size={12} />
             Link do Evento
           </label>
-
-          {/* --- CENÁRIO 1: PLANO INFINITY (Pode editar) --- */}
-          {infinityPlan && (
+          {slugFree && (
             <div className="relative">
               <div className="flex items-center w-full border-b border-white/10 py-3 focus-within:border-emerald-400 transition-colors group-hover:border-white/20">
                 <span className="text-zinc-500 text-base font-medium mr-0.5">
                   memora.com/
                 </span>
                 <input
+                  {...register("slug")}
                   type="text"
-                  placeholder="seu-evento"
-                  className="bg-transparent text-white placeholder-zinc-700 focus:outline-none w-full text-base font-bold tracking-wide uppercase"
+                  placeholder="Seu-evento"
+                  className="bg-transparent text-white placeholder-zinc-700 focus:outline-none w-full text-base font-bold tracking-wide"
                 />
-                {/* Badge "Livre" */}
+
                 <div className="flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/20 whitespace-nowrap">
                   <CheckCircle2 size={10} /> LIVRE
                 </div>
               </div>
-              <p className="text-[10px] text-emerald-400/70 mt-2 ml-1 flex items-center gap-1">
-                <Gem size={10} /> Benefício Infinity: O link pode ser personalizado.
+              <p
+                className={`text-[10px] ${
+                  currentPlan.name === "Black Edition"
+                    ? "text-yellow-400"
+                    : currentPlan.text
+                } mt-2 ml-1 flex items-center gap-1`}
+              >
+                <Gem size={10} /> Benefício Infinity: O link pode ser
+                personalizado.
               </p>
             </div>
           )}
-        {!infinityPlan && (
+
+          {!slugFree && (
             <div className="relative opacity-70">
-                <div className="flex items-center w-full border-b border-white/5 py-3 border-dashed">
-                   <span className="text-zinc-600 text-base font-medium mr-1">memora.com/</span>
-                   <span className="text-zinc-500 text-base font-bold tracking-wide italic">
-                        {linkEvento}
-                   </span>
-                   <Lock size={14} className="text-zinc-600 ml-auto" />
-                </div>
-                <p className="text-[10px] text-zinc-500 mt-2 ml-1">
-                   O link será liberado após o pagamento.
-                </p>
-           </div>
-        )}
-        
+              <div className="flex items-center w-full border-b border-white/5 py-3 border-dashed">
+                <span className="text-zinc-600 text-base font-medium mr-1">
+                  memora.com/
+                </span>
+                <span className="text-zinc-500 text-base font-bold tracking-wide italic">
+                  {randomSlug}
+                </span>
+                <Lock size={14} className="text-zinc-600 ml-auto" />
+              </div>
+              <p className="text-[10px] text-zinc-500 mt-2 ml-1">
+                O link será liberado após o pagamento.
+              </p>
+            </div>
+          )}
         </div>
 
         {/* BLOCO C: NOTA DE RODAPÉ */}
@@ -130,8 +233,12 @@ const ReviewPlans = () => {
       </div>
 
       {/* 3. RODAPÉ / BOTÕES */}
-      <div className="flex-none pt-4 flex justify-between">
-        <button className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors duration-300">
+      <div className="pt-6 flex justify-between">
+        <button
+          type="button"
+          className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors duration-300"
+          onClick={onPrev}
+        >
           <div className="p-2 rounded-full border border-white/10 group-hover:border-cyan-500 group-hover:bg-cyan-500/10 transition-all duration-300">
             <ChevronLeft
               size={20}
@@ -140,19 +247,22 @@ const ReviewPlans = () => {
           </div>
           <span className="text-lg font-medium tracking-wide">Voltar</span>
         </button>
-
-        <button className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors duration-300">
-          <span className="text-lg font-medium tracking-wide">Pagamento</span>
-          <div className="p-2 rounded-full border border-white/10 group-hover:border-emerald-500 group-hover:bg-emerald-500/10 transition-all duration-300">
+        <button
+          type="submit"
+          className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors duration-300"
+        >
+          <span className="text-lg font-medium tracking-wide">Próximo</span>
+          <div className="p-2 rounded-full border border-white/10 group-hover:border-cyan-500 group-hover:bg-cyan-500/10 transition-all duration-300">
             <ChevronRight
               size={20}
-              className="text-emerald-500 transition-transform group-hover:translate-x-0.5"
+              className="text-cyan-500 transition-transform group-hover:translate-x-0.5"
             />
           </div>
         </button>
       </div>
-    </div>
+      {loading && <LoadingOverlay />}
+    </form>
   );
 };
 
-export default ReviewPlans;
+export default ReviewPlan;

@@ -4,10 +4,21 @@ import CreateEvent from "../../components/layout/CreateEvent";
 import CreatePlans from "../../components/layout/CreatePlans";
 import ReviewPlan from "../../components/layout/ReviewPlan";
 import Payment from "../../components/layout/PaymentPlan";
-
+import { useState } from "react";
 
 const CreateEventPage = () => {
-  const activePage = 'payment'
+  const [activePage, setActivePage] = useState(1);
+  const [globalData, setGlobalData] = useState({});
+
+  const nextStep = () => setActivePage((prev) => prev + 1);
+  const prevStep = () => setActivePage((prev) => prev - 1);
+
+  const handleSaveStep = (dataForm) => {
+    setGlobalData((prev) => ({ ...prev, ...dataForm }));
+    nextStep();
+    console.log(globalData);
+  };
+
 
   return (
     // Adicionei 'relative' aqui para poder posicionar a setinha de forma absoluta
@@ -24,27 +35,30 @@ const CreateEventPage = () => {
         Página Inicial
       </Link>
 
-      {activePage === "create" && (
+      {activePage === 1 && (
         <div className="flex-1 flex items-center justify-center p-4">
-          <CreateEvent />
+          <CreateEvent onNext={handleSaveStep} />
         </div>
       )}
-      {activePage === "plans" && (
+      {activePage === 2 && (
         <div className="flex-1 flex items-center justify-center p-4">
-          <CreatePlans />
+          <CreatePlans onNext={handleSaveStep} onPrev={prevStep} />
         </div>
       )}
-      {activePage === "review" && (
+      {activePage === 3 && (
         <div className="flex-1 flex items-center justify-center p-4">
-          <ReviewPlan />
+          <ReviewPlan
+            onNext={handleSaveStep}
+            onPrev={prevStep}
+            formData={globalData}
+          />
         </div>
       )}
-      {activePage === "payment" && (
+      {activePage === 4 && (
         <div className="flex-1 flex items-center justify-center p-4">
-          <Payment />
+          <Payment onNext={handleSaveStep} onPrev={prevStep} />
         </div>
       )}
-      
     </div>
   );
 };

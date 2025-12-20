@@ -10,7 +10,7 @@ const CardPlan = ({
   galery,
   video,
   brand,
-  theme = "emerald", // Fallback para não quebrar se esquecerem a prop
+  theme = "emerald", 
 }) => {
   const themes = {
     emerald: {
@@ -18,7 +18,7 @@ const CardPlan = ({
       bg: "bg-emerald-900/5",
       shadow: "shadow-[0_0_40px_-10px_rgba(16,185,129,0.3)]",
       text: "text-emerald-400",
-      accent: "text-emerald-200", // Cor suave para ícones menores
+      accent: "text-emerald-200", 
     },
     black: {
       border: "border-white/10",

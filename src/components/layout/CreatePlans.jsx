@@ -8,21 +8,33 @@ import {
   Zap,
   Star,
 } from "lucide-react";
+import { useForm } from "react-hook-form";
+import CardPlan from "../../components/ui/cardPlan";
 
-import CardPlan from "../../components/ui/CardPlan";
+const CreatePlans = ({ onNext, onPrev }) => {
+  const { register, handleSubmit, watch } = useForm({
+    defaultValues: {
+      plan_tier: "Pocket",
+    },
+  });
 
-const CreatePlans = () => {
-  const activePlan = 2;
+  const activePlan = watch("plan_tier");
+
+  const handleChangePlan = (data) => {
+    console.log("Plano escolhido:", data);
+    onNext(data)
+  };
 
   return (
-    <div className="w-full max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 px-4 mt-10 pb-5">
+    <form
+      className="w-full max-w-lg mx-auto animate-in fade-in slide-in-from-bottom-8 duration-700 px-4 mt-10 pb-5"
+      onSubmit={handleSubmit(handleChangePlan)}
+    >
       {/* 1. CABEÇALHO */}
       <div className="mb-10 text-center">
         <h2 className="text-3xl font-bold text-white mb-2 tracking-tight">
           Defina o Alcance da{" "}
-          <span
-            className="text-transparent bg-clip-text bg-linear-to-r from-violet-500 to-cyan-400"
-          >
+          <span className="text-transparent bg-clip-text bg-linear-to-r from-violet-500 to-cyan-400">
             Sua Memória
           </span>
         </h2>
@@ -43,20 +55,32 @@ const CreatePlans = () => {
               className="absolute left-0 top-1/2 -translate-y-1/2 text-zinc-600 transition-colors group-focus-within:text-violet-400"
               size={18}
             />
-            <select className="w-full bg-transparent border-b border-white/5 py-3 pl-8 pr-8 text-white focus:outline-none focus:border-cyan-500 transition-all appearance-none cursor-pointer text-base uppercase font-bold tracking-wider">
-              <option className="bg-slate-950 text-zinc-400">
+            <select
+              className="w-full bg-transparent border-b border-white/5 py-3 pl-8 pr-8 text-white focus:outline-none focus:border-cyan-500 transition-all appearance-none cursor-pointer text-base uppercase font-bold tracking-wider"
+              {...register("plan_tier")}
+            >
+              <option value="Pocket" className="bg-slate-950 text-zinc-400">
                 Pocket — R$ 29,90
               </option>
-              <option className="bg-slate-950 text-zinc-400">
+              <option value="Social" className="bg-slate-950 text-zinc-400">
                 Social — R$ 59,90
               </option>
-              <option className="bg-slate-950 text-violet-400" selected>
+              <option
+                value="Celebration"
+                className="bg-slate-950 text-violet-400"
+              >
                 Celebration — R$ 99,90
               </option>
-              <option className="bg-slate-950 text-zinc-400">
+              <option
+                value="Black"
+                className="bg-slate-950 text-zinc-400"
+              >
                 Black — R$ 149,90
               </option>
-              <option className="bg-slate-950 text-emerald-400">
+              <option
+                value="Infinity"
+                className="bg-slate-950 text-emerald-400"
+              >
                 Infinity — R$ 199,90
               </option>
             </select>
@@ -68,23 +92,22 @@ const CreatePlans = () => {
         </div>
 
         {/* --- 1. CARD POCKET (Azul/Básico) - REFERÊNCIA --- */}
-        {activePlan === 1 && (
-            <CardPlan
-              namePlan={"POCKET"}
-              price={"29,90"}
-              icon={Zap}
-              guest={20}
-              postWindow={1}
-              galery={"7 Dias"}
-              video={"A PARTE"}
-              brand={"MEMORA"}
-              theme={"amber"}
-            />
-          
+        {activePlan === "Pocket" && (
+          <CardPlan
+            namePlan={"POCKET"}
+            price={"29,90"}
+            icon={Zap}
+            guest={20}
+            postWindow={1}
+            galery={"7 Dias"}
+            video={"A PARTE"}
+            brand={"MEMORA"}
+            theme={"amber"}
+          />
         )}
 
         {/* --- 2. CARD SOCIAL (Ciano/Intermediário) --- */}
-        {activePlan === 2 && (
+        {activePlan === "Social" && (
           <CardPlan
             namePlan={"SOCIAL"}
             price={"59,90"}
@@ -99,7 +122,7 @@ const CreatePlans = () => {
         )}
 
         {/* --- 3. CARD CELEBRATION (Roxo/Destaque) --- */}
-        {activePlan === 3 && (
+        {activePlan === "Celebration" && (
           <CardPlan
             namePlan={"CELEBRATION"}
             price={"99,90"}
@@ -107,14 +130,14 @@ const CreatePlans = () => {
             guest={120}
             postWindow={1}
             galery={"30 Dias"}
-            video={"A PARTE"}
+            video={"INCLUSO"}
             brand={"MEMORA"}
             theme={"violet"}
           />
         )}
 
         {/* --- 4. CARD BLACK (Opção 1: Obsidiana Polida) --- */}
-        {activePlan === 4 && (
+        {activePlan === "Black" && (
           <CardPlan
             namePlan={"BLACK EDITION"}
             price={"149,90"}
@@ -122,14 +145,14 @@ const CreatePlans = () => {
             guest={250}
             postWindow={2}
             galery={"3 Meses"}
-            video={"Incluso"}
+            video={"INCLUSO"}
             brand={"PERSONALIZADA"}
             theme={"black"}
           />
         )}
 
         {/* --- 5. CARD INFINITY (Esmeralda/Supremo) --- */}
-        {activePlan === 5 && (
+        {activePlan === "Infinity" && (
           <CardPlan
             namePlan={"INFINITY"}
             price={"199,90"}
@@ -137,7 +160,7 @@ const CreatePlans = () => {
             guest={"Ilimitados"}
             postWindow={14}
             galery={"6 Meses"}
-            video={"Incluso"}
+            video={"INCLUSO"}
             brand={"PERSONALIZADA"}
             theme={"emerald"}
           />
@@ -145,7 +168,11 @@ const CreatePlans = () => {
 
         {/* 3. BOTÃO NEXT */}
         <div className="pt-6 flex justify-between">
-          <button className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors duration-300">
+          <button
+            type="button"
+            className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors duration-300"
+            onClick={onPrev}
+          >
             <div className="p-2 rounded-full border border-white/10 group-hover:border-cyan-500 group-hover:bg-cyan-500/10 transition-all duration-300">
               <ChevronLeft
                 size={20}
@@ -154,7 +181,10 @@ const CreatePlans = () => {
             </div>
             <span className="text-lg font-medium tracking-wide">Voltar</span>
           </button>
-          <button className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors duration-300">
+          <button
+            className="group flex items-center gap-3 text-zinc-400 hover:text-white transition-colors duration-300"
+            type="submit"
+          >
             <span className="text-lg font-medium tracking-wide">Próximo</span>
             <div className="p-2 rounded-full border border-white/10 group-hover:border-cyan-500 group-hover:bg-cyan-500/10 transition-all duration-300">
               <ChevronRight
@@ -165,7 +195,7 @@ const CreatePlans = () => {
           </button>
         </div>
       </div>
-    </div>
+    </form>
   );
 };
 
