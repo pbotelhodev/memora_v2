@@ -22,7 +22,6 @@ const CreatePlans = ({ onNext, onPrev }) => {
   const activePlan = watch("plan_tier");
 
   const handleChangePlan = (data) => {
-    console.log("Plano escolhido:", data);
     onNext(data)
   };
 

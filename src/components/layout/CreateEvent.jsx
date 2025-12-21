@@ -165,7 +165,7 @@ const CreateEvent = ({ onNext }) => {
               />
 
               <input
-                {...register("date_event", {
+                {...register("event_date", {
                   required: "Selecione a data do evento.",
                 })}
                 type="date"
