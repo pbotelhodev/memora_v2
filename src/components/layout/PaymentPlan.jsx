@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   ChevronRight,
@@ -21,13 +21,34 @@ import {
   PlusCircle,
 } from "lucide-react";
 
+import axios from "axios";
+
+import {
+  maskCardNumber,
+  maskCpfCnpj,
+  maskCEP,
+  maskCardExpiry,
+  unmask,
+} from "../../utils/masks";
+
+import LoadingOverlay from "../ui/LoadingOverlay";
+
+
 const PaymentPlan = ({ onPrev, onNext, formData }) => {
+
   // Lógica de Navegação do Checkout
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [paymentStep, setPaymentStep] = useState("select"); // 'select', 'pix', 'card', 'boleto'
   const [infoUser, setInfoUser] = useState();
+  const [loading, setLoading] = useState(false);
 
-  const { register, handleSubmit } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    setFocus,
+    formState: { errors },
+  } = useForm();
 
   const handleOpenModal = () => {
     setIsModalOpen(true);
@@ -51,6 +72,46 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
     };
 
     onNext(payLoad);
+  };
+
+  const handleBlurCEP = async (e) => {
+    //Limpa o CEP
+    setLoading(true);
+
+    const cleanCep = unmask(e.target.value);
+
+    //Confirma se tem os 8 números padrões
+    if (cleanCep?.length === 8) {
+      try {
+        //chama a API de CEP
+        const { data } = await axios.get(
+          `https://viacep.com.br/ws/${cleanCep}/json/`
+        );
+        if (!data.erro) {
+          setValue("street", data.logradouro);
+          setValue("neighborhood", data.bairro);
+          setValue("city", data.localidade);
+          setValue("state", data.uf);
+
+          //verifica se é CEP geral e se tem bairro e rua
+          if (!data.logradouro) {
+            if (!data.bairro) {
+              setFocus("neighborhood");
+            } else {
+              setFocus("street");
+            }
+          } else {
+            //Joga pro input numero
+            setFocus("number");
+          }
+        } else {
+          alert("Cep não encontrado");
+        }
+      } catch (error) {
+        console.error("Erro ao buscar CEP:", error);
+      }
+    }
+    setLoading(false);
   };
 
   return (
@@ -99,7 +160,10 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                 {...register("cpf", {
                   required: "Insira o seu CPF/CNPJ.",
                 })}
-                type="text"
+                onChange={(event) =>
+                  (event.target.value = maskCpfCnpj(event.target.value))
+                }
+                type="tel"
                 placeholder="CPF ou CNPJ"
                 className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
               />
@@ -114,8 +178,12 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                   size={20}
                 />
                 <input
-                  {...register("cep", { required: true })}
-                  type="text"
+                  {...register("cep", { required: "Insira o seu CEP." })}
+                  onChange={(event) =>
+                    (event.target.value = maskCEP(event.target.value))
+                  }
+                  onBlur={handleBlurCEP}
+                  type="tel"
                   placeholder="CEP"
                   className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
                 />
@@ -127,7 +195,9 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                   size={20}
                 />
                 <input
-                  {...register("state", { required: true })}
+                  {...register("state", {
+                    required: "Insira o seu estado(UF)",
+                  })}
                   type="text"
                   placeholder="Estado (UF)"
                   className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
@@ -141,7 +211,7 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                   size={20}
                 />
                 <input
-                  {...register("city", { required: true })}
+                  {...register("city", { required: "Insira sua cidade" })}
                   type="text"
                   placeholder="Cidade"
                   className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
@@ -154,7 +224,9 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                   size={20}
                 />
                 <input
-                  {...register("neighborhood", { required: true })}
+                  {...register("neighborhood", {
+                    required: "Insira seu bairro",
+                  })}
                   type="text"
                   placeholder="Bairro"
                   className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
@@ -168,7 +240,7 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                   size={20}
                 />
                 <input
-                  {...register("street", { required: true })}
+                  {...register("street", { required: "Insira sua rua" })}
                   type="text"
                   placeholder="Rua / Avenida"
                   className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
@@ -182,7 +254,9 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                   size={20}
                 />
                 <input
-                  {...register("number", { required: true })}
+                  {...register("number", {
+                    required: "Insira o número da sua residência",
+                  })}
                   type="tel"
                   placeholder="Nº"
                   // Removi 'text-center' e adicionei 'pl-9' para caber o ícone
@@ -374,7 +448,12 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                 <div className="space-y-6 mb-10">
                   <div className="group">
                     <input
-                      type="text"
+                      type="tel"
+                      onChange={(event) =>
+                        (event.target.value = maskCardNumber(
+                          event.target.value
+                        ))
+                      }
                       placeholder="Número do Cartão"
                       className="w-full bg-transparent border-b border-white/10 py-3 text-base text-white focus:outline-none focus:border-violet-500 transition-all font-mono tracking-widest"
                     />
@@ -386,12 +465,17 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                   />
                   <div className="grid grid-cols-2 gap-8">
                     <input
-                      type="text"
+                      type="tel"
+                      onChange={(event) =>
+                        (event.target.value = maskCardExpiry(
+                          event.target.value
+                        ))
+                      }
                       placeholder="MM/AA"
                       className="bg-transparent border-b border-white/10 py-3 text-base text-white focus:outline-none focus:border-violet-500"
                     />
                     <input
-                      type="text"
+                      type="tel"
                       placeholder="CVV"
                       className="bg-transparent border-b border-white/10 py-3 text-base text-white focus:outline-none focus:border-violet-500"
                     />
@@ -476,6 +560,7 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
           </div>
         </div>
       )}
+      {loading && <LoadingOverlay />}
     </form>
   );
 };
