@@ -1,4 +1,5 @@
-import { useState } from "react";
+// Import Tools
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
   ChevronRight,
@@ -10,7 +11,6 @@ import {
   MapPin,
   FileText,
   Copy,
-  Clock,
   X,
   CheckCircle2,
   Home,
@@ -19,10 +19,19 @@ import {
   Building,
   Hash,
   PlusCircle,
+  Loader2,
 } from "lucide-react";
-
 import axios from "axios";
+import { createClient } from "@supabase/supabase-js";
+// Import database/supabase
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Import navigate
+import { useNavigate } from "react-router-dom";
+
+// Imports Marcaras de inputs
 import {
   maskCardNumber,
   maskCpfCnpj,
@@ -31,49 +40,315 @@ import {
   unmask,
 } from "../../utils/masks";
 
+//Import Layout/UI
 import LoadingOverlay from "../ui/LoadingOverlay";
 
-
-const PaymentPlan = ({ onPrev, onNext, formData }) => {
-
-  // Lógica de Navegação do Checkout
-  const [isModalOpen, setIsModalOpen] = useState(false);
+//Função
+const PaymentPlan = ({ onPrev, formData, existingUser }) => {
+  const navigate = useNavigate();
+  // useStates
+  const [isModalOpen, setIsModalOpen] = useState(false); // Abre e fecha o modal
   const [paymentStep, setPaymentStep] = useState("select"); // 'select', 'pix', 'card', 'boleto'
-  const [infoUser, setInfoUser] = useState();
-  const [loading, setLoading] = useState(false);
+  const [infoUser, setInfoUser] = useState(); // Salva todas as informacoes do usuario, cpf e endereço
+  const [loading, setLoading] = useState(false); // Tela de loading
+  const [codePay, setCodePay] = useState(null); // Codigo pix ou código de barras
 
+  // Array de planos
+  const retentionPlan = {
+    Pocket: 7,
+    Social: 7,
+    Celebration: 30,
+    Black: 90,
+    Infinity: 180,
+  };
+  const pricePlan = {
+    Pocket: 29.9,
+    Social: 59.9,
+    Celebration: 99.9,
+    Black: 149.9,
+    Infinity: 199.9,
+  };
+ /*  const installmentsByPlan = {
+    Pocket: 1, // 29.90
+    Social: 2, // 59.90
+    Celebration: 4, // 99.90
+    Black: 6, // 149.90
+    Infinity: 10, // 199.90
+  }; */
+
+  // Import useForm
   const {
     register,
     handleSubmit,
     setValue,
     setFocus,
-    formState: { errors },
+    getValues,
+    /* formState: { errors }, */
   } = useForm();
 
-  const handleOpenModal = () => {
-    setIsModalOpen(true);
-  };
+  // UseEffects
+  useEffect(() => {
+    if (existingUser?.cpf) {
+      // 1. Preenche o formulário visualmente (React Hook Form)
+      // Caso o usuário feche o modal para editar, os dados já estarão lá
+      setValue("cpf", existingUser.cpf);
+      setValue("cep", existingUser.cep);
+      setValue("state", existingUser.state);
+      setValue("city", existingUser.city);
+      setValue("neighborhood", existingUser.neighborhood);
+      setValue("street", existingUser.street);
+      setValue("number", existingUser.number);
+      setValue("complement", existingUser.complement);
+
+      // 2. Preenche o estado interno usado para envio
+      setInfoUser(existingUser);
+
+      // 3. Pula direto pro Modal! 🚀
+      setIsModalOpen(true);
+    }
+  }, [existingUser, setValue]);
+
+  //Função que fecha o modal de pagamento
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setPaymentStep("select");
   };
-
+  //Função que salva os dados do form fiscal
   const handleDataFisco = (data) => {
     setInfoUser(data);
     setIsModalOpen(true);
   };
 
-  const handleFinalize = () => {
-    const payLoad = {
-      ...formData,
-      infoUser: infoUser,
-      payment_method: paymentStep,
-      status: "Aguardando Aprovação",
-    };
+  //Função que gera o pagamento ========================================
+  const handleGeneratePayment = async (method) => {
+    setLoading(true);
 
-    onNext(payLoad);
+    try {
+      console.log(`🔥 Gerando pagamento via ${method}...`);
+      // Gera o pagamento
+      const planKey = formData.plan_tier;
+      const price = pricePlan[planKey];
+      const payloadToSend = {
+        infoUser: {
+          cpf: (getValues("cpf") || infoUser?.cpf || "").replace(/\D/g, ""),
+          // Usamos o || para garantir que nunca seja undefined
+          name: formData.name_user || "Cliente não identificado",
+          email: formData.email_user || "email@naoinformado.com",
+          phone: formData.phone_user || "00000000000",
+
+          street: getValues("street") || infoUser?.street || "",
+          number: getValues("number") || infoUser?.number || "",
+          neighborhood:
+            getValues("neighborhood") || infoUser?.neighborhood || "",
+          cep: (getValues("cep") || infoUser?.cep || "").replace(/\D/g, ""),
+        },
+        payment_method: method,
+        event_name: formData.event_name || "Evento Sem Nome",
+        plan_tier: formData.plan_tier,
+        value: price,
+      };
+      console.log("📦 Enviando Payload:", payloadToSend);
+
+      if (method !== "card") {
+        // Chama a Edge Function
+        const { data: result, error } = await supabase.functions.invoke(
+          "create-payment",
+          {
+            body: payloadToSend,
+          }
+        );
+
+        if (error) throw new Error(`Erro API: ${error.message}`);
+        if (!result.success)
+          throw new Error(result.error || "Pagamento não autorizado");
+
+        console.log("✅ Pagamento criado:", result);
+        setCodePay(result);
+      }
+      setPaymentStep(method);
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setLoading(false);
+    }
   };
 
+  const handleCopyPix = () => {
+    const pixCode = codePay?.pix?.payload;
+    navigator.clipboard.writeText(pixCode);
+    alert("Código pix copiado!");
+  };
+
+  // Funçao que seta a festa no banco de dados ====================================================
+  const handleFinalize = async (data) => {
+    setLoading(true);
+    console.log("🔥 Iniciando processo de pagamento...");
+
+    try {
+      // 1. Pega usuário logado
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) throw new Error("Sessão expirada. Faça login novamente.");
+
+      // ==============// ==============// ==============// ============== //
+      // ============= // Preparação dos Dados (LIMPEZA) // ============== //
+      // ==============// ==============// ==============// ============== //
+
+      // 1. Limpeza do número do cartão
+      const cleanCardNumber = data.card_number
+        ? data.card_number.replace(/\s/g, "")
+        : "";
+
+      // 2. Tratamento da Data de Validade
+      let expMonth = "";
+      let expYear = "";
+
+      if (data.card_expiry && data.card_expiry.includes("/")) {
+        const splitDate = data.card_expiry.split("/");
+        expMonth = splitDate[0];
+        // Se o ano for "30", vira "2030". Se já for "2030", mantém.
+        expYear =
+          splitDate[1].length === 2 ? `20${splitDate[1]}` : splitDate[1];
+      }
+
+      const cardDataForApi = {
+        card_number: cleanCardNumber,
+        card_name: data.card_name,
+        expiry_month: expMonth,
+        expiry_year: expYear,
+        card_cvv: data.card_cvv,
+        ccv: data.card_cvv,
+        card_installment: parseInt(data.card_installment, 10),
+      };
+
+      // 3. Garante o preço correto
+      const price = pricePlan[formData.plan_tier];
+
+      // ==============// ==============// ==============// ============== //
+      // ============= //Chama o EdgeFunction do Supabase// ============== //
+      // ==============// ==============// ==============// ============== //
+
+      // AQUI ESTAVA O ERRO: Recriamos a estrutura { infoUser: {...} } que a API espera
+      const payloadToSend = {
+        infoUser: {
+          cpf: (infoUser?.cpf || "").replace(/\D/g, ""),
+          name:
+            formData.name_user || infoUser?.name || "Cliente não identificado",
+          email: formData.email_user || user.email, // Fallback pro email do auth
+          phone: formData.phone_user || infoUser?.phone || "00000000000",
+
+          street: infoUser?.street || "",
+          number: infoUser?.number || "",
+          neighborhood: infoUser?.neighborhood || "",
+          city: infoUser?.city || "",
+          state: infoUser?.state || "",
+          complement: infoUser?.complement || "",
+          cep: (infoUser?.cep || "").replace(/\D/g, ""),
+        },
+        payment_method: "card",
+        event_name: formData.event_name || "Evento Sem Nome",
+        plan_tier: formData.plan_tier,
+        value: price,
+        // Espalhamos os dados do cartão na raiz do objeto (junto com infoUser)
+        ...cardDataForApi,
+      };
+
+      console.log("📦 Payload Final enviado para API:", payloadToSend);
+
+      const { data: paymentResult, error: functionError } =
+        await supabase.functions.invoke("create-payment", {
+          body: payloadToSend,
+        });
+
+      // Tratamento de erro técnico da função
+      if (functionError) {
+        const errorBody = await functionError.context
+          ?.json?.()
+          .catch(() => null);
+        console.error("Detalhes do erro da função:", functionError, errorBody);
+        throw new Error(
+          `Erro de comunicação com servidor: ${functionError.message}`
+        );
+      }
+
+      // Tratamento de erro de negócio (Recusado pelo banco, etc)
+      if (!paymentResult || !paymentResult.success) {
+        throw new Error(
+          paymentResult?.error || "Pagamento não autorizado pela operadora."
+        );
+      }
+
+      console.log("💸 Pagamento Aprovado!", paymentResult);
+
+      // ==============// ==============// ==============// ============== //
+      // =========  Atualiza o perfil do usuario, se necessário  ========= //
+      // ==============// ==============// ==============// ============== //
+
+      const { data: existingProfile } = await supabase
+        .from("users")
+        .select("cpf")
+        .eq("id", user.id)
+        .single();
+
+      if (!existingProfile?.cpf) {
+        console.log("💾 Salvando dados fiscais no perfil do usuário...");
+        await supabase
+          .from("users")
+          .update({
+            cpf: infoUser.cpf,
+            cep: infoUser.cep,
+            street: infoUser.street,
+            number: infoUser.number,
+            neighborhood: infoUser.neighborhood,
+            city: infoUser.city,
+            state: infoUser.state,
+            complement: infoUser.complement,
+          })
+          .eq("id", user.id);
+      }
+
+      // ==============// ==============// ==============// ============== //
+      // ============ // Salva o evento no banco de dados // ============= //
+      // ==============// ==============// ==============// ============== //
+
+      const { error: dbError } = await supabase.from("events").insert([
+        {
+          payment_id: paymentResult.paymentId,
+          owner_id: user.id,
+          slug: formData.slug,
+          event_name: formData.event_name,
+          plan_tier: formData.plan_tier,
+          is_active: true,
+          retention_days: retentionPlan[formData.plan_tier],
+          event_date: formData.event_date,
+          location: formData.location,
+          category: formData.category,
+          payment_method: paymentStep,
+          status: paymentResult.status,
+          time_event: formData.time_event,
+        },
+      ]);
+
+      if (dbError) throw dbError;
+
+      console.log("✅ Evento Salvo com Sucesso! ID:", paymentResult.id);
+
+      // ============== // ============== // ==============// ============== //
+      // ============== //  Redireciona para o dashboard   // ============== //
+      // ============== // ============== // ==============// ============== /
+
+      setLoading(false);
+      navigate("/app/dashboard");
+    } catch (error) {
+      console.error("❌ Erro fatal no processo:", error);
+      alert(`Erro: ${error.message}`);
+      setLoading(false);
+    }
+  };
+
+  //Função que coleta o CepApi e preenche os campos automaticamente
   const handleBlurCEP = async (e) => {
     //Limpa o CEP
     setLoading(true);
@@ -159,10 +434,9 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
               <input
                 {...register("cpf", {
                   required: "Insira o seu CPF/CNPJ.",
+                  onChange: (event) =>
+                    (event.target.value = maskCpfCnpj(event.target.value)),
                 })}
-                onChange={(event) =>
-                  (event.target.value = maskCpfCnpj(event.target.value))
-                }
                 type="tel"
                 placeholder="CPF ou CNPJ"
                 className="w-full bg-transparent border-b border-white/10 py-4 pl-9 text-base text-white focus:outline-none focus:border-cyan-500 transition-all"
@@ -178,10 +452,11 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                   size={20}
                 />
                 <input
-                  {...register("cep", { required: "Insira o seu CEP." })}
-                  onChange={(event) =>
-                    (event.target.value = maskCEP(event.target.value))
-                  }
+                  {...register("cep", {
+                    required: "Insira o seu CEP.",
+                    onChange: (event) =>
+                      (event.target.value = maskCEP(event.target.value)),
+                  })}
                   onBlur={handleBlurCEP}
                   type="tel"
                   placeholder="CEP"
@@ -299,7 +574,6 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
 
           <button
             type="submit"
-            onClick={handleOpenModal}
             className="group flex items-center gap-4 px-8 py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg shadow-[0_10px_30px_-10px_rgba(6,182,212,0.5)] hover:scale-105 active:scale-95 transition-all"
           >
             Pagar Agora
@@ -340,7 +614,7 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                 <div className="grid grid-cols-1 gap-4">
                   <button
                     type="button"
-                    onClick={() => setPaymentStep("pix")}
+                    onClick={() => handleGeneratePayment("pix")}
                     className="flex items-center gap-5 p-4 rounded-xl border border-white/5 bg-zinc-950/40 hover:border-cyan-500 group transition-all duration-300"
                   >
                     <div className="p-3 rounded-lg bg-cyan-500/10 text-cyan-500 group-hover:scale-110 transition-transform">
@@ -358,6 +632,7 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
 
                   <button
                     type="button"
+                    /* onClick={() => handleGeneratePayment("card")} */
                     onClick={() => setPaymentStep("card")}
                     className="flex items-center gap-5 p-4 rounded-xl border border-white/5 bg-zinc-950/40 hover:border-violet-500 group transition-all duration-300"
                   >
@@ -376,7 +651,7 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
 
                   <button
                     type="button"
-                    onClick={() => setPaymentStep("boleto")}
+                    onClick={() => handleGeneratePayment("boleto")}
                     className="flex items-center gap-5 p-4 rounded-xl border border-white/5 bg-zinc-950/40 hover:border-zinc-400 group transition-all duration-300"
                   >
                     <div className="p-3 rounded-lg bg-zinc-500/10 text-zinc-400 group-hover:scale-110 transition-transform">
@@ -392,6 +667,30 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                     </div>
                   </button>
                 </div>
+                {infoUser && (
+                  <div className="mt-2 p-3 bg-zinc-950/50 rounded-lg border border-white/5 text-left flex justify-between items-center group">
+                    <div>
+                      <p className="text-[10px] text-zinc-500 uppercase font-bold">
+                        Faturamento para:
+                      </p>
+                      <p className="text-xs text-zinc-300 truncate max-w-50">
+                        {infoUser.street}, {infoUser.number},{" "}
+                        {infoUser.neighborhood}
+                      </p>
+                      <p className="text-[10px] text-zinc-500">
+                        CPF: {infoUser.cpf}
+                      </p>
+                    </div>
+
+                    {/* Botão para ele poder voltar e editar se quiser */}
+                    <button
+                      onClick={() => setIsModalOpen(false)} // Fecha o modal e mostra o form preenchido
+                      className="text-cyan-500 hover:text-cyan-400 text-xs font-bold"
+                    >
+                      Alterar
+                    </button>
+                  </div>
+                )}
               </div>
             )}
 
@@ -405,18 +704,36 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                   Pague via Pix
                 </h3>
 
-                <div className="w-60 h-60 bg-white p-3 rounded-xl mb-6 shadow-2xl border-4 border-white/10">
-                  <QrCode size={216} className="text-black w-full h-full" />
+                {/* GERADOR DE QR CODE VIA API EXTERNA */}
+                <div className="w-60 h-60 bg-white p-3 mb-5 rounded-xl flex items-center justify-center">
+                  {codePay?.pix?.encodedImage ? (
+                    <img
+                      // O Asaas manda o Base64 puro. O navegador precisa do prefixo data:image/png;base64,
+                      src={`data:image/png;base64,${codePay.pix.encodedImage}`}
+                      alt="QR Code Pix"
+                      className="w-full h-full object-contain"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-2">
+                      <Loader2 className="animate-spin text-zinc-400" />
+                      <span className="text-zinc-400 text-xs">
+                        Gerando QR Code...
+                      </span>
+                    </div>
+                  )}
                 </div>
 
                 <div className="w-full relative mb-8">
                   <input
                     type="text"
-                    value="00020126580014..."
+                    value={
+                      codePay?.pix?.payload || "Gerando codigo copia & cola"
+                    }
                     readOnly
                     className="w-full bg-zinc-950 border border-white/10 rounded-xl py-4 pl-5 pr-14 text-xs text-zinc-500 font-mono focus:outline-none"
                   />
                   <button
+                    onClick={handleCopyPix}
                     type="button"
                     className="absolute right-3 top-1/2 -translate-y-1/2 p-2 text-cyan-500 bg-cyan-500/10 rounded-lg"
                   >
@@ -426,7 +743,7 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
 
                 <button
                   type="button"
-                  onClick={handleFinalize}
+                  onClick={handleSubmit(handleFinalize)}
                   className="w-full py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(6,182,212,0.5)]"
                 >
                   JÁ PAGUEI <CheckCircle2 size={20} />
@@ -448,41 +765,59 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                 <div className="space-y-6 mb-10">
                   <div className="group">
                     <input
+                      {...register("card_number", {
+                        required: "Insira um cartão válido",
+                        onChange: (event) =>
+                          (event.target.value = maskCardNumber(
+                            event.target.value
+                          )),
+                      })}
                       type="tel"
-                      onChange={(event) =>
-                        (event.target.value = maskCardNumber(
-                          event.target.value
-                        ))
-                      }
                       placeholder="Número do Cartão"
                       className="w-full bg-transparent border-b border-white/10 py-3 text-base text-white focus:outline-none focus:border-violet-500 transition-all font-mono tracking-widest"
                     />
                   </div>
                   <input
+                    {...register("card_name", {
+                      required: "Coloque o nome como está no cartão",
+                    })}
                     type="text"
                     placeholder="Nome no Cartão"
                     className="w-full bg-transparent border-b border-white/10 py-3 text-base text-white focus:outline-none focus:border-violet-500 uppercase"
                   />
                   <div className="grid grid-cols-2 gap-8">
                     <input
+                      {...register("card_expiry", {
+                        required:
+                          "Coloque a data correta de vencimento do cartão",
+                        onChange: (event) =>
+                          (event.target.value = maskCardExpiry(
+                            event.target.value
+                          )),
+                      })}
                       type="tel"
-                      onChange={(event) =>
-                        (event.target.value = maskCardExpiry(
-                          event.target.value
-                        ))
-                      }
                       placeholder="MM/AA"
                       className="bg-transparent border-b border-white/10 py-3 text-base text-white focus:outline-none focus:border-violet-500"
                     />
                     <input
+                      {...register("card_cvv", {
+                        required: "Coloque o cvv como está no cartão",
+                      })}
                       type="tel"
                       placeholder="CVV"
                       className="bg-transparent border-b border-white/10 py-3 text-base text-white focus:outline-none focus:border-violet-500"
                     />
                   </div>
                   <div className="relative">
-                    <select className="w-full bg-transparent border-b border-white/10 py-3 text-base text-zinc-400 focus:outline-none focus:border-violet-500 cursor-pointer appearance-none">
-                      <option className="bg-zinc-900">1x R$ 199,90</option>
+                    <select
+                      {...register("card_installment", {
+                        required: "Coloque o nome como está no cartão",
+                      })}
+                      className="w-full bg-transparent border-b border-white/10 py-3 text-base text-zinc-400 focus:outline-none focus:border-violet-500 cursor-pointer appearance-none"
+                    >
+                      <option value={1} selected className="bg-zinc-900">
+                        1x R$ 199,90
+                      </option>
                     </select>
                     <ChevronRight
                       className="absolute right-0 top-1/2 -translate-y-1/2 rotate-90 text-zinc-600 pointer-events-none"
@@ -492,7 +827,8 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                 </div>
                 <button
                   type="button"
-                  onClick={handleFinalize}
+                  // LÓGICA CORRIGIDA: Chama handleFinalize para processar e salvar
+                  onClick={handleSubmit(handleFinalize)}
                   className="w-full py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg active:scale-95 transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(139,92,246,0.5)]"
                 >
                   PAGAR AGORA <Lock size={18} />
@@ -506,44 +842,38 @@ const PaymentPlan = ({ onPrev, onNext, formData }) => {
                 <div className="mb-6 p-4 rounded-full bg-zinc-500/10 text-zinc-300 border border-white/10 shadow-lg">
                   <Barcode size={40} />
                 </div>
+
                 <h3 className="text-xl font-bold mb-3 text-center bg-linear-to-r from-violet-500 to-cyan-400 bg-clip-text text-transparent">
                   Boleto Disponível
                 </h3>
+
                 <p className="text-xs text-zinc-500 text-center mb-8 px-4 leading-relaxed tracking-tight">
-                  Vencimento em 3 dias. Aprovação rápida via QR Code Pix no
-                  boleto.
+                  O boleto foi gerado com sucesso. Clique no botão abaixo para
+                  visualizar o documento e realizar o pagamento.
                 </p>
 
                 <div className="w-full space-y-4 mb-8">
-                  <div className="relative">
-                    <input
-                      type="text"
-                      value="34191.79001 01043.51004..."
-                      readOnly
-                      className="w-full bg-zinc-950 border border-white/10 rounded-xl py-4 pl-4 pr-12 text-[10px] text-zinc-400 font-mono shadow-inner"
-                    />
-                    <button
-                      type="button"
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white p-2 hover:bg-white/10 rounded-lg"
-                    >
-                      <Copy size={18} />
-                    </button>
-                  </div>
+                  {/* BOTÃO DESTAQUE: GRADIENTE + GLOW (Ação Principal) */}
                   <button
-                    type="button"
-                    className="w-full py-4 rounded-xl border border-white/10 text-zinc-300 font-bold text-sm hover:bg-white/5 transition-all flex items-center justify-center gap-3 uppercase tracking-widest"
+                    onClick={() => window.open(codePay?.boletoUrl, "_blank")}
+                    className="w-full py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg hover:brightness-110 active:scale-95 transition-all flex items-center justify-center gap-3 shadow-[0_10px_30px_-10px_rgba(139,92,246,0.5)]"
                   >
-                    BAIXAR PDF <Download size={20} />
+                    VISUALIZAR BOLETO <Download size={20} />
+                  </button>
+
+                  {/* BOTÃO CLEAN: APENAS BORDA (Ação Secundária) */}
+                  <button
+                    onClick={handleSubmit(handleFinalize)}
+                    className="w-full py-4 rounded-xl border border-white/5 bg-white/5 text-zinc-400 font-bold text-lg hover:bg-white/10 hover:text-white transition-all active:scale-95"
+                  >
+                    JÁ PAGUEI
                   </button>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={handleFinalize}
-                  className="w-full py-4 rounded-xl bg-linear-to-r from-violet-600 to-cyan-500 text-white font-bold text-lg active:scale-95 transition-all"
-                >
-                  JÁ PAGUEI
-                </button>
+                {/* TEXTO DE SUPORTE CASO PRECISE */}
+                <p className="text-[10px] text-zinc-600 uppercase tracking-widest font-bold">
+                  Vencimento em 3 dias úteis
+                </p>
               </div>
             )}
 

@@ -23,7 +23,7 @@ const ReviewPlan = ({ formData, onNext, onPrev }) => {
 
   const activePlan = {
     nome: formData.event_name,
-    data: formData.date_event,
+    data: formData.event_date,
     location: formData.location,
     plano: formData.plan_tier,
   };
@@ -197,7 +197,7 @@ const ReviewPlan = ({ formData, onNext, onPrev }) => {
                     : currentPlan.text
                 } mt-2 ml-1 flex items-center gap-1`}
               >
-                <Gem size={10} /> Benefício Infinity: O link pode ser
+                <Gem size={10} /> Benefício {activePlan.plano}: O link pode ser
                 personalizado.
               </p>
             </div>

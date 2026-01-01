@@ -27,7 +27,7 @@ const CreateEvent = ({ onNext }) => {
       event_name: "", 
       category: "", 
       location: "", 
-      date_event: "", 
+      event_date: "", 
       time_event: "",
     },
   });
@@ -35,7 +35,7 @@ const CreateEvent = ({ onNext }) => {
   const handlePartyInfo = (data) => {
     setLoading(true);
     setTimeout(() => {
-      console.log(data);
+      
       setLoading(false);
       onNext(data);
     }, 2000);

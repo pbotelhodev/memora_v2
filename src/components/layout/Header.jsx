@@ -60,7 +60,7 @@ const Header = () => {
         <div className="text-2xl font-bold text-white cursor-pointer ">
           <Link to="/">
             <img src={logoMemora} className="w-28 h-auto" alt="Logo memora" />
-          </Link>  
+          </Link>
         </div>
 
         {/* ================================================= */}
@@ -100,7 +100,7 @@ const Header = () => {
           <button
             onClick={handleCreateEvent}
             className="text-[15px] hidden md:block px-5 py-2 font-semibold text-white 
-                   bg-gradient-to-r from-violet-600 to-cyan-500 shadow-[0_0_10px_0_rgba(59,130,246,0.2)] 
+                   bg-linear-to-r from-violet-600 to-cyan-500 shadow-[0_0_10px_0_rgba(59,130,246,0.2)] 
                    rounded-lg  transition duration-300 hover:opacity-80 hover:scale-[1.02] active:scale-100"
           >
             Criar Evento
@@ -148,13 +148,13 @@ const Header = () => {
               );
             })}
 
-            <Link
+            <buttom
               to="/app/criar"
-              className="mt-4 px-4 py-2 text-center font-bold text-white bg-gradient-to-r from-violet-600 to-cyan-500 rounded-lg shadow-[0_0_10px_0_rgba(59,130,246,0.2)] hover:scale-[1.02] active:scale-100"
-              onClick={() => setMenuSwitch(false)}
+              className="mt-4 px-4 py-2 text-center font-bold text-white bg-linear-to-r from-violet-600 to-cyan-500 rounded-lg shadow-[0_0_10px_0_rgba(59,130,246,0.2)] hover:scale-[1.02] active:scale-100"
+              onClick={(() => setMenuSwitch(false), handleCreateEvent)}
             >
-              CRIAR EVENTO
-            </Link>
+              Criar Evento
+            </buttom>
           </div>
         </nav>
       )}
